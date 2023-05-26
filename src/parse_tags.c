@@ -318,13 +318,14 @@ void hlsparse_ext_inf_term(ext_inf_t *ext_inf)
 void hlsparse_iframe_stream_inf_term(iframe_stream_inf_t *stream_inf)
 {
     if(stream_inf) {
-        char **params[] = {
-            &stream_inf->codecs,
-            &stream_inf->video,
-            &stream_inf->uri
-        };
+        char **params[] = { 0, 0, 0};
 
-        parse_param_term(params, 3);
+        int i = 0;
+        if(stream_inf->codecs) params[i++] = &stream_inf->codecs;
+        if(stream_inf->video) params[i++] = &stream_inf->video;
+        if(stream_inf->uri) params[i++] = &stream_inf->uri;
+
+        parse_param_term(params, i);
     }
 }
 
@@ -339,17 +340,18 @@ void hlsparse_iframe_stream_inf_term(iframe_stream_inf_t *stream_inf)
 void hlsparse_stream_inf_term(stream_inf_t *stream_inf)
 {
     if(stream_inf) {
-        char **params[] = {
-            &stream_inf->codecs,
-            &stream_inf->video,
-            &stream_inf->audio,
-            &stream_inf->subtitles,
-            &stream_inf->closed_captions,
-            &stream_inf->video,
-            &stream_inf->uri
-        };
+        char **params[] = { 0, 0, 0, 0, 0, 0, 0 };
 
-        parse_param_term(params, 7);
+        int i = 0;
+        if(stream_inf->codecs) params[i++] = &stream_inf->codecs;
+        if(stream_inf->video) params[i++] = &stream_inf->video;
+        if(stream_inf->audio) params[i++] = &stream_inf->audio;
+        if(stream_inf->subtitles) params[i++] = &stream_inf->subtitles;
+        if(stream_inf->closed_captions) params[i++] = &stream_inf->closed_captions;
+        if(stream_inf->video) params[i++] = &stream_inf->video;
+        if(stream_inf->uri) params[i++] = &stream_inf->uri;
+
+        parse_param_term(params, i);
     }
 }
 
@@ -364,14 +366,15 @@ void hlsparse_stream_inf_term(stream_inf_t *stream_inf)
 void hlsparse_key_term(hls_key_t *dest)
 {
     if(dest) {
-        char **params[] = {
-            &dest->uri,
-            &dest->iv,
-            &dest->key_format,
-            &dest->key_format_versions
-        };
+        char **params[] = { 0, 0, 0, 0 };
 
-        parse_param_term(params, 4);
+        int i = 0;
+        if(dest->uri) params[i++] = &dest->uri;
+        if(dest->iv) params[i++] = &dest->iv;
+        if(dest->key_format) params[i++] = &dest->key_format;
+        if(dest->key_format_versions) params[i++] = &dest->key_format_versions;
+
+        parse_param_term(params, i);
     }
 }
 
@@ -386,11 +389,13 @@ void hlsparse_key_term(hls_key_t *dest)
 void hlsparse_map_term(map_t *dest)
 {
     if(dest) {
-        char **params[] = {
-            &dest->uri
-        };
+        if(dest->uri) {
+            char **params[] = {
+                &dest->uri
+            };
 
-        parse_param_term(params, 1);
+            parse_param_term(params, 1);
+        }
     }
 }
 
@@ -433,17 +438,16 @@ void hlsparse_daterange_term(daterange_t *dest)
 void hlsparse_media_term(media_t *dest)
 {
     if(dest) {
-        char **params[] = {
-            &dest->group_id,
-            &dest->name,
-            &dest->language,
-            &dest->assoc_language,
-            &dest->uri,
-            &dest->characteristics,
-            &dest->channels,
-        };
-
-        parse_param_term(params, 7);
+        char **params[] = { 0, 0, 0, 0, 0, 0, 0 };
+        int i = 0;
+        if (dest->group_id) params[i++] = &dest->group_id;
+        if (dest->name) params[i++] = &dest->name;
+        if (dest->language) params[i++] = &dest->language;
+        if (dest->assoc_language) params[i++] = &dest->assoc_language;
+        if (dest->uri) params[i++] = &dest->uri;
+        if (dest->characteristics) params[i++] = &dest->characteristics;
+        if (dest->channels) params[i++] = &dest->channels;
+        parse_param_term(params, i);
     }
 }
 
@@ -458,13 +462,12 @@ void hlsparse_media_term(media_t *dest)
 void hlsparse_segment_term(segment_t *dest)
 {
     if(dest) {
-        char ** params[] = {
-            &dest->title,
-            &dest->uri
-        };
+        char ** params[] = { 0 , 0 };
+        int i = 0;
+        if(dest->title) params[i++] = &dest->title;
+        if(dest->uri) params[i++] = &dest->uri;
 
-        parse_param_term(params, 2);
-        
+        parse_param_term(params, i);
         hlsparse_string_list_term(&dest->custom_tags);
     }
 }
@@ -480,14 +483,14 @@ void hlsparse_segment_term(segment_t *dest)
 void hlsparse_session_data_term(session_data_t *dest)
 {
     if(dest) {
-        char ** params[] = {
-            &dest->data_id,
-            &dest->uri,
-            &dest->language,
-            &dest->value
-        };
+        char ** params[] = { 0, 0, 0, 0 };
+        int i = 0;
+        if(dest->data_id) params[i++] = &dest->data_id;
+        if(dest->uri) params[i++] = &dest->uri;
+        if(dest->language) params[i++] = &dest->language;
+        if(dest->value) params[i++] = &dest->value;
 
-        parse_param_term(params, 4);
+        parse_param_term(params, i);
     }
 }
 

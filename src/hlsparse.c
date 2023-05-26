@@ -50,11 +50,13 @@ HLSCode hlsparse_master_term(master_t *dest)
         return HLS_ERROR;
     }
 
-    char **params[] = {
-        &dest->uri
-    };
+    if(dest->uri) {
+        char **params[] = {
+            &dest->uri
+        };
+        parse_param_term(params, 1);
+    }
 
-    parse_param_term(params, 1);
     hlsparse_string_list_term(&dest->custom_tags);
     hlsparse_session_data_list_term(&dest->session_data);
     hlsparse_media_list_term(&dest->media);
@@ -69,11 +71,14 @@ HLSCode hlsparse_media_playlist_term(media_playlist_t *dest)
     if(!dest) {
         return HLS_ERROR;
     }
-    char **params[] = {
-        &dest->uri
-    };
 
-    parse_param_term(params, 1);
+    if(dest->uri) {
+        char **params[] = {
+            &dest->uri
+        };
+        parse_param_term(params, 1);
+    }
+    
     hlsparse_string_list_term(&dest->custom_tags);
     hlsparse_segment_list_term(&dest->segments);
     parse_map_list_term(&dest->maps);

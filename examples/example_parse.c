@@ -30,7 +30,6 @@ int main() {
         fprintf(stderr, "failed to initialize master playlist structure");
         return -1;
     }
-    myMaster.uri="\0";
 
     // parse the playlist information into our master structure
     int read = hlsparse_master(masterSrc, strlen(masterSrc), &myMaster);

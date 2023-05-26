@@ -42,6 +42,7 @@ check: tests
 	./test-runner.sh
 
 clean:
+	rm -r -f test/*.o.dSYM
 	find . -type f -name '*.o' -exec rm {} \;
 	find . -type f -name '*.o.dSYM' -exec rm {} \;
 	find . -type f -name '*.o.gcno' -exec rm {} \;

@@ -49,7 +49,6 @@ int main() {
         fprintf(stderr, "failed to initialize master playlist structure");
         return -1;
     }
-    myMaster.uri = "\0";
 
     char *m3u8 = read_file("test_master.m3u8");
     printf("test_master.m3u8\n%s", m3u8);
