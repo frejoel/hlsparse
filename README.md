@@ -1,7 +1,7 @@
 # HLS Parse
 Library for parsing an HLS master and media playlist into a C object structure.
-Supports Draft 23 of the Pantos specification.
-See https://tools.ietf.org/html/draft-pantos-http-live-streaming-23 for details.
+Supports v13 of the 2nd edition specification.
+See https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis-13 for details.
 
 ## Building
 Run `make static` to build a static library. See the generated `bin` directory.
