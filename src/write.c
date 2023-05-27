@@ -29,6 +29,8 @@
     latest = pgprintf(latest, "#%s:%s=\"%s\"", tag_name, param_name, value);
 #define START_TAG_INT(tag_name, param_name, value) \
     latest = pgprintf(latest, "#%s:%s=%d", tag_name, param_name, value);
+#define START_TAG_FLOAT(tag_name, param_name, value) \
+    latest = pgprintf(latest, "#%s:%s=%.3f", tag_name, param_name, value);
 #define END_TAG() \
     latest = pgprintf(latest, "\n");
 #define ADD_PARAM_STR(param_name, value) \
@@ -268,7 +270,12 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
             def = def->next;
         }
     }
-    ADD_TAG_INT(EXTXTARGETDURATION, (int)playlist->target_duration);
+    // target-duration is rounded to the nearest int
+    ADD_TAG_INT(EXTXTARGETDURATION, (int)(playlist->target_duration + 0.5f));
+    if(playlist->part_target_duration != 0.f) {
+        START_TAG_FLOAT(EXTXPARTINF, PARTTARGET, playlist->part_target_duration);
+        END_TAG();
+    }
     ADD_TAG_INT(EXTXMEDIASEQUENCE, playlist->media_sequence);
     ADD_TAG_INT(EXTXDISCONTINUITYSEQ, playlist->discontinuity_sequence);
     switch(playlist->playlist_type) {
