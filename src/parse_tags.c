@@ -156,6 +156,18 @@ void hlsparse_start_init(start_t *dest)
 }
 
 /**
+ * Helper function for initializing a define_t object
+ *
+ * @param dest The dest object to initialize
+ */
+void hlsparse_define_init(define_t *dest)
+{
+    if(dest) {
+        memset(dest, 0, sizeof(define_t));
+    }
+}
+
+/**
  * Helper function for initializing a segment_list_t object
  *
  * @param dest The dest object to initialize
@@ -264,6 +276,18 @@ void hlsparse_string_list_init(string_list_t *dest)
 }
 
 /**
+ * Helper function for initializing a define_list_t object
+ *
+ * @param dest The dest object to initialize
+ */
+void hlsparse_define_list_init(define_list_t *dest)
+{
+    if(dest) {
+        memset(dest, 0, sizeof(define_list_t));
+    }
+}
+
+/**
  * Helper function for initializing a param_list_t object
  *
  * @param dest The dest object to initialize
@@ -295,7 +319,7 @@ void parse_param_term(char ***params, int size)
  * Helper function for terminating an ext_inf_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param ext_inf The ext_inf to cleanup
  */
@@ -311,7 +335,7 @@ void hlsparse_ext_inf_term(ext_inf_t *ext_inf)
  * Helper function for terminating an iframe_stream_inf_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param stream_inf The stream_inf to cleanup
  */
@@ -333,7 +357,7 @@ void hlsparse_iframe_stream_inf_term(iframe_stream_inf_t *stream_inf)
  * Helper function for terminating a stream_inf_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param stream_inf The stream_inf to cleanup
  */
@@ -359,7 +383,7 @@ void hlsparse_stream_inf_term(stream_inf_t *stream_inf)
  * Helper function for terminating an hls_key_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -382,7 +406,7 @@ void hlsparse_key_term(hls_key_t *dest)
  * Helper function for terminating a map_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -403,7 +427,7 @@ void hlsparse_map_term(map_t *dest)
  * Helper function for terminating a daterange_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -431,7 +455,7 @@ void hlsparse_daterange_term(daterange_t *dest)
  * Helper function for terminating a map_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -455,7 +479,7 @@ void hlsparse_media_term(media_t *dest)
  * Helper function for terminating a segment_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -476,7 +500,7 @@ void hlsparse_segment_term(segment_t *dest)
  * Helper function for terminating a session_data_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -495,10 +519,33 @@ void hlsparse_session_data_term(session_data_t *dest)
 }
 
 /**
+ * Helper function for terminating a define_t.
+ * This will free any properties on the object resetting the values, but won't
+ * try to free the object itself.
+ * To reuse the object, call the corresponding init function after termination.
+ *
+ * @param dest The object to cleanup
+ */
+void hlsparse_define_term(define_t *dest)
+{
+    if(dest) {
+        char ** params[] = { 0, 0, 0, 0 };
+        int i = 0;
+        if(dest->name) params[i++] = &dest->name;
+        if(dest->value) params[i++] = &dest->value;
+        if(dest->import) params[i++] = &dest->import;
+        if(dest->query_param) params[i++] = &dest->query_param;
+
+        parse_param_term(params, i);
+    }
+}
+
+
+/**
  * Helper function for terminating a segmentlist_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -524,7 +571,7 @@ void hlsparse_segment_list_term(segment_list_t *dest)
  * Helper function for terminating a session_data_list_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -549,7 +596,7 @@ void hlsparse_session_data_list_term(session_data_list_t *dest)
  * Helper function for terminating a keylist_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -574,7 +621,7 @@ void parse_key_list_term(key_list_t *dest)
  * Helper function for terminating a media_list_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -599,7 +646,7 @@ void hlsparse_media_list_term(media_list_t *dest)
  * Helper function for terminating a map_list_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -624,7 +671,7 @@ void parse_map_list_term(map_list_t *dest)
  * Helper function for terminating a daterange_list_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -649,7 +696,7 @@ void hlsparse_daterange_list_term(daterange_list_t *dest)
  * Helper function for terminating a iframe_stream_inf_list_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -675,7 +722,7 @@ void hlsparse_iframe_stream_inf_list_term(iframe_stream_inf_list_t *dest)
  * Helper function for terminating a stream_inf_list_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -700,7 +747,7 @@ void hlsparse_stream_inf_list_term(stream_inf_list_t *dest)
  * Helper function for terminating a string_list_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -724,7 +771,7 @@ void hlsparse_string_list_term(string_list_t *dest)
  * Helper function for terminating a param_list_t.
  * This will free any properties on the object resetting the values, but won't
  * try to free the object itself.
- * To reuse the object call the corresponding init function after termination.
+ * To reuse the object, call the corresponding init function after termination.
  *
  * @param dest The object to cleanup
  */
@@ -747,6 +794,30 @@ void hlsparse_param_list_term(param_list_t *dest)
 
         if(ptr) {
             hlsparse_param_list_term(ptr);
+            hls_free(ptr);
+        }
+    }
+}
+
+/**
+ * Helper function for terminating a define_list_t.
+ * This will free any properties on the object resetting the values, but won't
+ * try to free the object itself.
+ * To reuse the object, call the corresponding init function after termination.
+ *
+ * @param dest The object to cleanup
+ */
+void hlsparse_define_list_term(define_list_t *dest)
+{
+    if(dest) {
+        if(dest->data) {
+            hls_free(dest->data);
+        }
+
+        define_list_t *ptr = dest->next;
+
+        if(ptr) {
+            hlsparse_string_list_term(ptr);
             hls_free(ptr);
         }
     }
@@ -1641,5 +1712,46 @@ int parse_stream_inf_tag(const char *src, size_t size, stream_inf_t *dest)
     }
 
     // return the length of characters we have parsed
+    return pt - src;
+}
+
+/**
+ * Helper function for parsing HLS tags and setting values on the supplied object
+ *
+ * @param src The HLS source string
+ * @param size The size of the source string
+ * @param dest The destination object to write the value to
+ */
+int parse_define(const char *src, size_t size, define_t* dest)
+{
+    if(!src || !size) {
+        return 0;
+    }
+
+    const char* pt = src;
+
+    while(!(*pt == '\0' || *pt == '\r' || *pt == '\n' || pt >= &src[size])) {
+        if(*pt == ':') {
+            ++pt;
+        }
+
+        if(EQUAL(pt, NAME)) {
+            ++pt; // get past the '='
+            pt += parse_attrib_str(pt, &dest->name, size - (pt - src));
+        } else if(EQUAL(pt, VALUE)) {
+            ++pt; // get past the '='
+            pt += parse_attrib_str(pt, &dest->value, size - (pt - src));
+        } else if(EQUAL(pt, IMPORT)) {
+            ++pt; // get past the '='
+            pt += parse_attrib_str(pt, &dest->import, size - (pt - src));
+        }  else if(EQUAL(pt, QUERYPARAM)) {
+            ++pt; // get past the '='
+            pt += parse_attrib_str(pt, &dest->query_param, size - (pt - src));
+        } else {
+            ++pt;
+        }
+    }
+
+    // return how far we have moved along in the tag
     return pt - src;
 }

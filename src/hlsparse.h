@@ -77,6 +77,17 @@
 #define EXTXSTART                   "EXT-X-START"
 #define EXTXALLOWCACHE              "EXT-X-ALLOW-CACHE"
 #define EXTXDISCONTINUITYSEQ        "EXT-X-DISCONTINUITY-SEQUENCE"
+#define EXTXDEFINE                  "EXT-X-DEFINE"
+// TODO
+#define EXTXPARTINF                 "EXT-X-PART-INF"
+#define EXTXSERVERCONTROL           "EXT-X-SERVER-CONTROL"
+#define EXTXGAP                     "EXT-X-GAP"
+#define EXTXBITRATE                 "EXT-X-BITRATE"
+#define EXTXPART                    "EXT-X-PART"
+#define EXTXSKIP                    "EXT-X-SKIP"
+#define EXTXPRELOADHINT             "EXT-X-PRELOAD-HINT"
+#define EXTXRENDITIONREPORT         "EXT-X-RENDITION-REPORT"
+#define EXTXCONTENTSTEERING         "EXT-X-CONTENT-STEERING"
 
 // HLS tag properties
 #define PROGRAMID                   "PROGRAM-ID"
@@ -135,6 +146,8 @@
 #define NONE                        "NONE"
 #define AES128                      "AES-128"
 #define SAMPLEAES                   "SAMPLE-AES"
+#define IMPORT                      "IMPORT"
+#define QUERYPARAM                  "QUERYPARAM"
 
 #ifdef __cplusplus
 extern "C" {
@@ -291,6 +304,13 @@ typedef struct {
     bool_t precise;
 } start_t;
 
+typedef struct {
+    char *name;
+    char *value;
+    char *import;
+    char *query_param;
+} define_t;
+
 /**
  * Linked list of segments.
  */
@@ -356,6 +376,14 @@ typedef struct daterange_list {
 } daterange_list_t;
 
 /**
+ * Linked list of Define tags.
+ */
+typedef struct define_list {
+    define_t                        *data;
+    struct define_list              *next;
+} define_list_t;
+
+/**
  * Master Playlist Structure.
  */
 typedef struct {
@@ -373,6 +401,8 @@ typedef struct {
     string_list_t               custom_tags;
     key_list_t                  session_keys;
     int                         nb_session_keys;
+    define_list_t               defines;
+    int                         nb_defines;
 } master_t;
 
 /**
@@ -387,6 +417,7 @@ typedef struct {
     int                         nb_maps;
     int                         nb_dateranges;
     int                         nb_custom_tags;
+    int                         nb_defines;
     int                         playlist_type;
     int                         discontinuity_sequence;
     float                       target_duration;
@@ -407,7 +438,8 @@ typedef struct {
     map_list_t                  maps;
     daterange_list_t            dateranges;
     string_list_t               custom_tags;
-    segment_t                   *last_segment;                  
+    segment_t                   *last_segment;
+    define_list_t               defines;
 } media_playlist_t;
 
 ///////////////////////////////////////
@@ -539,6 +571,8 @@ void hlsparse_map_list_init(map_list_t *list);
 void hlsparse_string_list_init(string_list_t *list);
 void hlsparse_daterange_list_init(daterange_list_t *list);
 void hlsparse_param_list_init(param_list_t *list);
+void hlsparse_define_init(define_t *def);
+void hlsparse_define_list_init(define_list_t *list);
 
 void hlsparse_param_term(char ***params, int size);
 void hlsparse_ext_inf_term(ext_inf_t *ext_inf);
@@ -560,6 +594,8 @@ void hlsparse_iframe_stream_inf_list_term(iframe_stream_inf_list_t *list);
 void hlsparse_stream_inf_list_term(stream_inf_list_t *list);
 void hlsparse_string_list_term(string_list_t *list);
 void hlsparse_param_list_term(param_list_t *list);
+void hlsparse_define_term(define_t *def);
+void hlsparse_define_list_term(define_list_t *list);
 
 #ifdef __cplusplus
 }

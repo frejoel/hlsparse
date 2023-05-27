@@ -696,6 +696,55 @@ ADAP/00060/1001_ADAP_00004.ts\n\
 
     hlsparse_media_playlist_term(&playlist);
 }
+
+void media_playlist_parse_test4(void)
+{
+    media_playlist_t playlist;
+    hlsparse_media_playlist_init(&playlist);
+
+    const char *src = "#EXTM3U\n\
+#EXT-X-VERSION:3\n\
+#EXT-X-TARGETDURATION:6\n\
+#EXT-X-MEDIA-SEQUENCE:1\n\
+#EXT-X-PLAYLIST-TYPE:VOD\n\
+#EXT-X-DEFINE:NAME=\"var1\",VALUE=\"val1\"\n\
+#EXT-X-DEFINE:IMPORT=\"var2\",VALUE=\"val2\"\n\
+#EXTINF:0.033,\n\
+ADAP/00060/1001_ADAP_00001.ts\n\
+#EXTINF:4.972,\n\
+ADAP/00060/1001_ADAP_00002.ts\n\
+#EXT-X-ENDLIST\n";
+
+    int res = hlsparse_media_playlist(src, strlen(src), &playlist);
+    CU_ASSERT_EQUAL(res, strlen(src))
+    CU_ASSERT_EQUAL(playlist.m3u, HLS_TRUE);
+    CU_ASSERT_EQUAL(playlist.target_duration, 6);
+    CU_ASSERT_EQUAL(playlist.media_sequence, 1);
+    CU_ASSERT_EQUAL(playlist.discontinuity_sequence, 0);
+    CU_ASSERT_EQUAL(playlist.playlist_type, PLAYLIST_TYPE_VOD);
+    CU_ASSERT_EQUAL(playlist.independent_segments, HLS_FALSE);
+    CU_ASSERT_EQUAL(playlist.iframes_only, HLS_FALSE);
+    CU_ASSERT_EQUAL(playlist.start.time_offset, 0.f);
+    CU_ASSERT_EQUAL(playlist.start.precise, HLS_FALSE);
+    CU_ASSERT_EQUAL(playlist.nb_segments, 2);
+    CU_ASSERT_EQUAL(playlist.nb_maps, 0);
+    CU_ASSERT_EQUAL(playlist.nb_dateranges, 0);
+    CU_ASSERT_EQUAL(playlist.nb_defines, 2);
+    CU_ASSERT_EQUAL(playlist.end_list, HLS_TRUE);
+
+    CU_ASSERT_EQUAL(strcmp("var1", playlist.defines.data->name), 0);
+    CU_ASSERT_EQUAL(strcmp("val1", playlist.defines.data->value), 0);
+    CU_ASSERT_EQUAL(playlist.defines.data->import, NULL);
+    CU_ASSERT_EQUAL(playlist.defines.data->query_param, NULL);
+
+    CU_ASSERT_EQUAL(strcmp("var2", playlist.defines.next->data->import), 0);
+    CU_ASSERT_EQUAL(strcmp("val2", playlist.defines.next->data->value), 0);
+    CU_ASSERT_EQUAL(playlist.defines.next->data->name, NULL);
+    CU_ASSERT_EQUAL(playlist.defines.next->data->query_param, NULL);
+
+    hlsparse_media_playlist_term(&playlist);
+}
+
 void setup(void)
 {
     hlsparse_global_init();
@@ -709,5 +758,6 @@ void setup(void)
     test("media_playlist_parse", media_playlist_parse_test);
     test("media_playlist_parse2", media_playlist_parse_test2);
     test("media_playlist_parse3", media_playlist_parse_test3);
+    test("media_playlist_parse4", media_playlist_parse_test4);
 }
 

@@ -186,6 +186,18 @@ void start_init_test(void)
     hlsparse_start_init(NULL);
 }
 
+void define_init_test(void)
+{
+    define_t def;
+    hlsparse_define_init(&def);
+    CU_ASSERT_EQUAL(def.name, NULL);
+    CU_ASSERT_EQUAL(def.value, NULL);
+    CU_ASSERT_EQUAL(def.import, NULL);
+    CU_ASSERT_EQUAL(def.query_param, NULL);
+
+    hlsparse_define_init(NULL);
+}
+
 void ext_inf_term_test(void)
 {
     ext_inf_t ext_inf;
@@ -388,6 +400,28 @@ void session_data_term_test(void)
     CU_ASSERT_EQUAL(session.value, NULL);
     CU_ASSERT_EQUAL(session.uri, NULL);
     CU_ASSERT_EQUAL(session.language, NULL);
+}
+
+void define_term_test(void)
+{
+    define_t def;
+    hlsparse_define_init(&def);
+
+    // make sure we don't crash
+    hlsparse_define_term(NULL);
+    hlsparse_define_term(&def);
+
+    hlsparse_define_init(&def);
+    def.name = str_utils_dup("name");
+    def.value = str_utils_dup("value");
+    def.import = str_utils_dup("import");
+    def.query_param = str_utils_dup("query_param");
+
+    hlsparse_define_term(&def);
+    CU_ASSERT_EQUAL(def.name, NULL);
+    CU_ASSERT_EQUAL(def.value, NULL);
+    CU_ASSERT_EQUAL(def.import, NULL);
+    CU_ASSERT_EQUAL(def.query_param, NULL);
 }
 
 void parse_byte_range_test(void)
@@ -847,6 +881,42 @@ void parse_start_test(void)
     CU_ASSERT_EQUAL(start.precise, HLS_FALSE);
 }
 
+void parse_define_test(void)
+{
+    define_t def;
+    hlsparse_define_init(&def);
+
+    const char *src = "NAME=\"ABC-123\",VALUE=\"789_zxy\"";
+    int res = parse_define(src, strlen(src), &def);
+    CU_ASSERT_EQUAL(res, strlen(src));
+    CU_ASSERT_EQUAL(strcmp("ABC-123", def.name), 0);
+    CU_ASSERT_EQUAL(strcmp("789_zxy", def.value), 0);
+    CU_ASSERT_EQUAL(def.import, NULL);
+    CU_ASSERT_EQUAL(def.query_param, NULL);
+
+    hlsparse_define_term(&def);
+    hlsparse_define_init(&def);
+
+    const char *src2 = "NAME=\"ABC-123\",VALUE=\"789_zxy\",IMPORT=\"imp9\",QUERYPARAM=\"qp0\"";
+    res = parse_define(src2, strlen(src2), &def);
+    CU_ASSERT_EQUAL(res, strlen(src2));
+    CU_ASSERT_EQUAL(strcmp("ABC-123", def.name), 0);
+    CU_ASSERT_EQUAL(strcmp("789_zxy", def.value), 0);
+    CU_ASSERT_EQUAL(strcmp("imp9", def.import), 0);
+    CU_ASSERT_EQUAL(strcmp("qp0", def.query_param), 0);
+
+    hlsparse_define_term(&def);
+    hlsparse_define_init(&def);
+
+    const char *src3 = "NAME=\"\",VALUE=\"\",IMPORT=\"\",QUERYPARAM=\"\"";
+    res = parse_define(src3, strlen(src3), &def);
+    CU_ASSERT_EQUAL(res, strlen(src3));
+    CU_ASSERT_EQUAL(def.name, NULL);
+    CU_ASSERT_EQUAL(def.value, NULL);
+    CU_ASSERT_EQUAL(def.import, NULL);
+    CU_ASSERT_EQUAL(def.query_param, NULL);
+}
+
 void setup(void)
 {
     hlsparse_global_init();
@@ -864,6 +934,7 @@ void setup(void)
     test("segment_init", segment_init_test);
     test("session_data_init", session_data_init_test);
     test("start_init", start_init_test);
+    test("define_init", define_init_test);
 
     suite("parser_tags_term", NULL, NULL);
     test("ext_inf_term", ext_inf_term_test);
@@ -875,6 +946,7 @@ void setup(void)
     test("media_term", media_term_test);
     test("segment_term", segment_term_test);
     test("session_data_term", session_data_term_test);
+    test("define_data_term", define_term_test);
 
     suite("parser_tags_parse", NULL, NULL);
     test("parse_byte_range", parse_byte_range_test);
@@ -888,5 +960,6 @@ void setup(void)
     test("parse_segment", parse_segment_test);
     test("parse_session_data", parse_session_data_test);
     test("parse_start", parse_start_test);
+    test("parse_define", parse_define_test);
 }
 

@@ -50,7 +50,8 @@ int parse_master_tag(const char *src, size_t size, master_t *dest)
 
     } else if (EQUAL(pt, EXTXVERSION)) {
         ++pt; // get past the ':'
-        pt += parse_str_to_int(pt, &dest->version, size - (pt - src));
+        // if the version is already specified, skip subsequent version tags
+        pt += parse_str_to_int(pt, dest->version > 0 ? NULL : &dest->version, size - (pt - src));
     } else if (EQUAL(pt, EXTXINDEPENDENTSEGMENTS )) {
 
         dest->independent_segments = HLS_TRUE;
@@ -171,6 +172,29 @@ int parse_master_tag(const char *src, size_t size, master_t *dest)
         };
         
         ++(dest->nb_session_keys);        
+    } else if(EQUAL(pt, EXTXDEFINE)) {
+        
+        ++pt;
+        define_t* def = hls_malloc(sizeof(define_t));
+        hlsparse_define_init(def);
+        pt += parse_define(pt, size -(pt - src), def);
+
+        define_list_t *next = &dest->defines;
+        while(next) {
+            if(!next->data) {
+                next->data = def;
+                break;
+            } else if(!next->next) {
+                next->next = hls_malloc(sizeof(define_list_t));
+                hlsparse_define_list_init(next->next);
+                next->next->data = def;
+                break;
+            }
+            next = next->next;
+        }
+
+        ++(dest->nb_defines);
+
     } else {
 
         // custom src
@@ -270,6 +294,29 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
                                        size - (pt - src));
             }
         }
+    } else if(EQUAL(pt, EXTXDEFINE)) {    
+        if (*pt == ':') {
+            ++pt;
+            define_t* def = hls_malloc(sizeof(define_t));
+            hlsparse_define_init(def);
+            pt += parse_define(pt, size -(pt - src), def);
+
+            define_list_t *next = &dest->defines;
+            while(next) {
+                if(!next->data) {
+                    next->data = def;
+                    break;
+                } else if(!next->next) {
+                    next->next = hls_malloc(sizeof(define_list_t));
+                    hlsparse_define_list_init(next->next);
+                    next->next->data = def;
+                    break;
+                }
+                next = next->next;
+            }
+
+            ++(dest->nb_defines);
+        }
     } else if(EQUAL(pt, EXTINF)) {
         ++pt;
         segment_t *segment = hls_malloc(sizeof(segment_t));
@@ -345,7 +392,7 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
             next = next->next;
         };
         
-        ++(dest->nb_keys);        
+        ++(dest->nb_keys);
 
     } else if(EQUAL(pt, EXTXMAP)) {
         ++pt;
