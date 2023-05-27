@@ -57,6 +57,12 @@
 #define DEFINE_TYPE_IMPORT          2
 #define DEFINE_TYPE_QUERYPARAM      3
 
+#define SEGMENT_TYPE_FULL           0x00
+#define SEGMENT_TYPE_PART           0x01
+#define SEGMENT_TYPE_GAP            0x80 // aka FULL_GAP
+#define SEGMENT_TYPE_FULL_GAP       0x80 // FULL | GAP
+#define SEGMENT_TYPE_PART_GAP       0x81 // PART | GAP 
+
 // HLS tags
 #define EXTM3U                      "EXTM3U"
 #define EXTXVERSION                 "EXT-X-VERSION"
@@ -84,9 +90,9 @@
 #define EXTXDISCONTINUITYSEQ        "EXT-X-DISCONTINUITY-SEQUENCE"
 #define EXTXDEFINE                  "EXT-X-DEFINE"
 #define EXTXPARTINF                 "EXT-X-PART-INF"
+#define EXTXGAP                     "EXT-X-GAP"
 // TODO
 #define EXTXSERVERCONTROL           "EXT-X-SERVER-CONTROL"
-#define EXTXGAP                     "EXT-X-GAP"
 #define EXTXBITRATE                 "EXT-X-BITRATE"
 #define EXTXPART                    "EXT-X-PART"
 #define EXTXSKIP                    "EXT-X-SKIP"
@@ -283,6 +289,7 @@ typedef struct {
 } media_t;
 
 typedef struct {
+    int type;
     int sequence_num;
     int key_index;
     int map_index;
@@ -417,6 +424,7 @@ typedef struct {
     int                         version;
     int                         media_sequence;
     int                         next_segment_media_sequence;
+    int                         next_segment_type;
     int                         nb_segments;
     int                         nb_keys;
     int                         nb_maps;

@@ -712,6 +712,7 @@ void media_playlist_parse_test4(void)
 #EXT-X-DEFINE:IMPORT=\"var2\",VALUE=\"val2\"\n\
 #EXTINF:0.033,\n\
 ADAP/00060/1001_ADAP_00001.ts\n\
+#EXT-X-GAP\n\
 #EXTINF:4.972,\n\
 ADAP/00060/1001_ADAP_00002.ts\n\
 #EXT-X-ENDLIST\n";
@@ -742,6 +743,10 @@ ADAP/00060/1001_ADAP_00002.ts\n\
     CU_ASSERT_EQUAL(strcmp("var2", playlist.defines.next->data->key), 0);
     CU_ASSERT_EQUAL(strcmp("val2", playlist.defines.next->data->value), 0);
     CU_ASSERT_EQUAL(playlist.defines.next->data->type, DEFINE_TYPE_IMPORT);
+
+    CU_ASSERT_EQUAL(playlist.nb_segments, 2);
+    CU_ASSERT_EQUAL(playlist.segments.next->data, playlist.last_segment);
+    CU_ASSERT_EQUAL(playlist.last_segment->type, SEGMENT_TYPE_FULL_GAP);
 
     hlsparse_media_playlist_term(&playlist);
 }

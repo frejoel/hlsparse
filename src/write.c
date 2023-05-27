@@ -347,6 +347,10 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
                 ADD_TAG_ENUM(EXTXPROGRAMDATETIME, buf);
             }
 
+            if(seg->data->type == (SEGMENT_TYPE_FULL | SEGMENT_TYPE_GAP)) {
+                ADD_TAG(EXTXGAP);
+            }
+
             if(seg->data->byte_range.n > 0) {
                 if(seg->data->byte_range.o != 0) {
                     latest = pgprintf(latest, "#%s:%d@%d\n", EXTXBYTERANGE, seg->data->byte_range.n, seg->data->byte_range.o);

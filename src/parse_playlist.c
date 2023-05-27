@@ -273,6 +273,8 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
     } else if(EQUAL(pt, EXTXPROGRAMDATETIME)) {
         ++pt; // get past the '=' sign
         pt += parse_date(pt, &dest->next_segment_pdt, size - (pt - src));
+    } else if(EQUAL(pt, EXTXGAP)) {
+        dest->next_segment_type |= SEGMENT_TYPE_GAP;
     } else if(EQUAL(pt, EXTXALLOWCACHE)) {
         dest->allow_cache = HLS_TRUE;
     } else if(EQUAL(pt, EXTXDISCONTINUITYSEQ)) {
@@ -330,6 +332,7 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
 
         pt += parse_segment(pt, size - (pt - src), segment);
 
+        segment->type = dest->next_segment_type;
         segment->sequence_num = dest->next_segment_media_sequence;
         ++(dest->next_segment_media_sequence);
 
