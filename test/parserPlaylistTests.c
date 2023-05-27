@@ -703,8 +703,9 @@ void media_playlist_parse_test4(void)
     hlsparse_media_playlist_init(&playlist);
 
     const char *src = "#EXTM3U\n\
-#EXT-X-VERSION:3\n\
+#EXT-X-VERSION:12\n\
 #EXT-X-TARGETDURATION:6\n\
+#EXT-X-PART-INF:PART-TARGET=3.1\n\
 #EXT-X-MEDIA-SEQUENCE:1\n\
 #EXT-X-PLAYLIST-TYPE:VOD\n\
 #EXT-X-DEFINE:NAME=\"var1\",VALUE=\"val1\"\n\
@@ -718,7 +719,9 @@ ADAP/00060/1001_ADAP_00002.ts\n\
     int res = hlsparse_media_playlist(src, strlen(src), &playlist);
     CU_ASSERT_EQUAL(res, strlen(src))
     CU_ASSERT_EQUAL(playlist.m3u, HLS_TRUE);
+    CU_ASSERT_EQUAL(playlist.version, 12);
     CU_ASSERT_EQUAL(playlist.target_duration, 6);
+    CU_ASSERT_EQUAL(playlist.part_target_duration, 3.1f);
     CU_ASSERT_EQUAL(playlist.media_sequence, 1);
     CU_ASSERT_EQUAL(playlist.discontinuity_sequence, 0);
     CU_ASSERT_EQUAL(playlist.playlist_type, PLAYLIST_TYPE_VOD);

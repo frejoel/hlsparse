@@ -247,6 +247,12 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
     } else if(EQUAL(pt, EXTXTARGETDURATION)) {
         ++pt; // get past the '=' sign
         pt += parse_str_to_float(pt, &dest->target_duration, size - (pt - src));
+    } else if(EQUAL(pt, EXTXPARTINF)) {
+        ++pt; // get past ':'
+        if(EQUAL(pt, PARTTARGET)) {
+            ++pt; // get past the '=' sign
+            pt += parse_str_to_float(pt, &dest->part_target_duration, size - (pt - src));
+        }
     } else if(EQUAL(pt, EXTXINDEPENDENTSEGMENTS)) {
         ++pt; // get past the '=' sign
         dest->independent_segments = HLS_TRUE;

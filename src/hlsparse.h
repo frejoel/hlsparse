@@ -83,8 +83,8 @@
 #define EXTXALLOWCACHE              "EXT-X-ALLOW-CACHE"
 #define EXTXDISCONTINUITYSEQ        "EXT-X-DISCONTINUITY-SEQUENCE"
 #define EXTXDEFINE                  "EXT-X-DEFINE"
-// TODO
 #define EXTXPARTINF                 "EXT-X-PART-INF"
+// TODO
 #define EXTXSERVERCONTROL           "EXT-X-SERVER-CONTROL"
 #define EXTXGAP                     "EXT-X-GAP"
 #define EXTXBITRATE                 "EXT-X-BITRATE"
@@ -153,6 +153,7 @@
 #define SAMPLEAES                   "SAMPLE-AES"
 #define IMPORT                      "IMPORT"
 #define QUERYPARAM                  "QUERYPARAM"
+#define PARTTARGET                  "PART-TARGET"
 
 #ifdef __cplusplus
 extern "C" {
@@ -425,6 +426,7 @@ typedef struct {
     int                         playlist_type;
     int                         discontinuity_sequence;
     float                       target_duration;
+    float                       part_target_duration;
     float                       duration;
     char                        *uri;
     bool_t                      m3u;
