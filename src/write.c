@@ -91,6 +91,21 @@ HLSCode hlswrite_master(char **dest, int *dest_size, master_t *master)
     if(master->version > 0) {
         ADD_TAG_INT(EXTXVERSION, master->version);
     }
+    if(master->nb_defines > 0) {
+        define_list_t *def = &master->defines;
+        while(def && def->data) {
+            if(def->data->name) {
+                START_TAG_STR(EXTXDEFINE, NAME, def->data->name);
+            }else if(def->data->import) {
+                START_TAG_STR(EXTXDEFINE, IMPORT, def->data->import);
+            }else if (def->data->query_param) {
+                START_TAG_STR(EXTXDEFINE, QUERYPARAM, def->data->query_param);
+            }
+            ADD_PARAM_STR(VALUE, def->data->value);
+            END_TAG();
+            def = def->next;
+        }
+    }
     ADD_TAG_IF_TRUE(EXTXINDEPENDENTSEGMENTS, master->independent_segments);
     ADD_XSTART_TAG_OPTL(master->start);
 
