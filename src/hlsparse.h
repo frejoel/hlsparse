@@ -52,6 +52,11 @@
 #define HDCP_LEVEL_NONE             1
 #define HDCP_LEVEL_TYPE0            2
 
+#define DEFINE_TYPE_INVALID         0
+#define DEFINE_TYPE_NAME            1
+#define DEFINE_TYPE_IMPORT          2
+#define DEFINE_TYPE_QUERYPARAM      3
+
 // HLS tags
 #define EXTM3U                      "EXTM3U"
 #define EXTXVERSION                 "EXT-X-VERSION"
@@ -305,10 +310,9 @@ typedef struct {
 } start_t;
 
 typedef struct {
-    char *name;
+    int type;
+    char *key;
     char *value;
-    char *import;
-    char *query_param;
 } define_t;
 
 /**

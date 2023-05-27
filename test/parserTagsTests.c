@@ -190,10 +190,9 @@ void define_init_test(void)
 {
     define_t def;
     hlsparse_define_init(&def);
-    CU_ASSERT_EQUAL(def.name, NULL);
+    CU_ASSERT_EQUAL(def.key, NULL);
     CU_ASSERT_EQUAL(def.value, NULL);
-    CU_ASSERT_EQUAL(def.import, NULL);
-    CU_ASSERT_EQUAL(def.query_param, NULL);
+    CU_ASSERT_EQUAL(def.type, DEFINE_TYPE_INVALID);
 
     hlsparse_define_init(NULL);
 }
@@ -412,16 +411,14 @@ void define_term_test(void)
     hlsparse_define_term(&def);
 
     hlsparse_define_init(&def);
-    def.name = str_utils_dup("name");
+    def.key = str_utils_dup("key");
     def.value = str_utils_dup("value");
-    def.import = str_utils_dup("import");
-    def.query_param = str_utils_dup("query_param");
+    def.type = DEFINE_TYPE_NAME;
 
     hlsparse_define_term(&def);
-    CU_ASSERT_EQUAL(def.name, NULL);
+    CU_ASSERT_EQUAL(def.key, NULL);
     CU_ASSERT_EQUAL(def.value, NULL);
-    CU_ASSERT_EQUAL(def.import, NULL);
-    CU_ASSERT_EQUAL(def.query_param, NULL);
+    CU_ASSERT_EQUAL(def.type, DEFINE_TYPE_INVALID);
 }
 
 void parse_byte_range_test(void)
@@ -889,32 +886,48 @@ void parse_define_test(void)
     const char *src = "NAME=\"ABC-123\",VALUE=\"789_zxy\"";
     int res = parse_define(src, strlen(src), &def);
     CU_ASSERT_EQUAL(res, strlen(src));
-    CU_ASSERT_EQUAL(strcmp("ABC-123", def.name), 0);
+    CU_ASSERT_EQUAL(strcmp("ABC-123", def.key), 0);
     CU_ASSERT_EQUAL(strcmp("789_zxy", def.value), 0);
-    CU_ASSERT_EQUAL(def.import, NULL);
-    CU_ASSERT_EQUAL(def.query_param, NULL);
+    CU_ASSERT_EQUAL(def.type, DEFINE_TYPE_NAME);
 
     hlsparse_define_term(&def);
     hlsparse_define_init(&def);
 
-    const char *src2 = "NAME=\"ABC-123\",VALUE=\"789_zxy\",IMPORT=\"imp9\",QUERYPARAM=\"qp0\"";
+    const char *src2 = "VALUE=\"789_zxy\",IMPORT=\"imp9\"";
     res = parse_define(src2, strlen(src2), &def);
     CU_ASSERT_EQUAL(res, strlen(src2));
-    CU_ASSERT_EQUAL(strcmp("ABC-123", def.name), 0);
+    CU_ASSERT_EQUAL(strcmp("imp9", def.key), 0);
     CU_ASSERT_EQUAL(strcmp("789_zxy", def.value), 0);
-    CU_ASSERT_EQUAL(strcmp("imp9", def.import), 0);
-    CU_ASSERT_EQUAL(strcmp("qp0", def.query_param), 0);
+    CU_ASSERT_EQUAL(def.type, DEFINE_TYPE_IMPORT);
 
     hlsparse_define_term(&def);
     hlsparse_define_init(&def);
 
-    const char *src3 = "NAME=\"\",VALUE=\"\",IMPORT=\"\",QUERYPARAM=\"\"";
+    const char *src3 = "VALUE=\"789_zxy\",QUERYPARAM=\"query-param\"";
     res = parse_define(src3, strlen(src3), &def);
     CU_ASSERT_EQUAL(res, strlen(src3));
-    CU_ASSERT_EQUAL(def.name, NULL);
+    CU_ASSERT_EQUAL(strcmp("query-param", def.key), 0);
+    CU_ASSERT_EQUAL(strcmp("789_zxy", def.value), 0);
+    CU_ASSERT_EQUAL(def.type, DEFINE_TYPE_QUERYPARAM);
+
+    hlsparse_define_term(&def);
+    hlsparse_define_init(&def);
+
+    const char *src4 = "NAME=\"\",VALUE=\"\",IMPORT=\"\",QUERYPARAM=\"\"";
+    res = parse_define(src4, strlen(src4), &def);
+    CU_ASSERT_EQUAL(res, strlen(src4));
+    CU_ASSERT_EQUAL(def.key, NULL);
     CU_ASSERT_EQUAL(def.value, NULL);
-    CU_ASSERT_EQUAL(def.import, NULL);
-    CU_ASSERT_EQUAL(def.query_param, NULL);
+
+    hlsparse_define_term(&def);
+    hlsparse_define_init(&def);
+
+    const char *src5 = "VALUE=\"not-valid\",INVALID=\"\"";
+    res = parse_define(src5, strlen(src5), &def);
+    CU_ASSERT_EQUAL(res, strlen(src5));
+    CU_ASSERT_EQUAL(def.key, NULL);
+    CU_ASSERT_EQUAL(strcmp("not-valid", def.value), 0);
+    CU_ASSERT_EQUAL(def.type, DEFINE_TYPE_INVALID);
 }
 
 void setup(void)

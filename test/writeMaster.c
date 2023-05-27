@@ -148,12 +148,15 @@ void write_master_test2(void)
     hlsparse_define_init(&defines[2]);
     hlsparse_define_list_init(&define_lists[0]);
     hlsparse_define_list_init(&define_lists[1]);
-    defines[0].name = "var1";
+    defines[0].key = "var1";
     defines[0].value = "val1";
-    defines[1].import = "var2";
+    defines[0].type = DEFINE_TYPE_NAME;
+    defines[1].key = "var2";
     defines[1].value = "2";
-    defines[2].query_param = "var3";
+    defines[1].type = DEFINE_TYPE_IMPORT;
+    defines[2].key = "var3";
     defines[2].value = "query_param-3";
+    defines[2].type = DEFINE_TYPE_QUERYPARAM;
     master.defines.data = &defines[0];
     master.defines.next = &define_lists[0];
     master.defines.next->data = &defines[1];

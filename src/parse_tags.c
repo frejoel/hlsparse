@@ -529,12 +529,12 @@ void hlsparse_session_data_term(session_data_t *dest)
 void hlsparse_define_term(define_t *dest)
 {
     if(dest) {
-        char ** params[] = { 0, 0, 0, 0 };
+        dest->type = DEFINE_TYPE_INVALID;
+
+        char ** params[] = { 0, 0 };
         int i = 0;
-        if(dest->name) params[i++] = &dest->name;
+        if(dest->key) params[i++] = &dest->key;
         if(dest->value) params[i++] = &dest->value;
-        if(dest->import) params[i++] = &dest->import;
-        if(dest->query_param) params[i++] = &dest->query_param;
 
         parse_param_term(params, i);
     }
@@ -817,7 +817,7 @@ void hlsparse_define_list_term(define_list_t *dest)
         define_list_t *ptr = dest->next;
 
         if(ptr) {
-            hlsparse_string_list_term(ptr);
+            hlsparse_define_list_term(ptr);
             hls_free(ptr);
         }
     }
@@ -1737,16 +1737,19 @@ int parse_define(const char *src, size_t size, define_t* dest)
 
         if(EQUAL(pt, NAME)) {
             ++pt; // get past the '='
-            pt += parse_attrib_str(pt, &dest->name, size - (pt - src));
+            pt += parse_attrib_str(pt, &dest->key, size - (pt - src));
+            dest->type = DEFINE_TYPE_NAME;
         } else if(EQUAL(pt, VALUE)) {
             ++pt; // get past the '='
             pt += parse_attrib_str(pt, &dest->value, size - (pt - src));
         } else if(EQUAL(pt, IMPORT)) {
             ++pt; // get past the '='
-            pt += parse_attrib_str(pt, &dest->import, size - (pt - src));
+            pt += parse_attrib_str(pt, &dest->key, size - (pt - src));
+            dest->type = DEFINE_TYPE_IMPORT;
         }  else if(EQUAL(pt, QUERYPARAM)) {
             ++pt; // get past the '='
-            pt += parse_attrib_str(pt, &dest->query_param, size - (pt - src));
+            pt += parse_attrib_str(pt, &dest->key, size - (pt - src));
+            dest->type = DEFINE_TYPE_QUERYPARAM;
         } else {
             ++pt;
         }

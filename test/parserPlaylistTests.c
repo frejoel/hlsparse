@@ -732,15 +732,13 @@ ADAP/00060/1001_ADAP_00002.ts\n\
     CU_ASSERT_EQUAL(playlist.nb_defines, 2);
     CU_ASSERT_EQUAL(playlist.end_list, HLS_TRUE);
 
-    CU_ASSERT_EQUAL(strcmp("var1", playlist.defines.data->name), 0);
+    CU_ASSERT_EQUAL(strcmp("var1", playlist.defines.data->key), 0);
     CU_ASSERT_EQUAL(strcmp("val1", playlist.defines.data->value), 0);
-    CU_ASSERT_EQUAL(playlist.defines.data->import, NULL);
-    CU_ASSERT_EQUAL(playlist.defines.data->query_param, NULL);
+    CU_ASSERT_EQUAL(playlist.defines.data->type, DEFINE_TYPE_NAME);
 
-    CU_ASSERT_EQUAL(strcmp("var2", playlist.defines.next->data->import), 0);
+    CU_ASSERT_EQUAL(strcmp("var2", playlist.defines.next->data->key), 0);
     CU_ASSERT_EQUAL(strcmp("val2", playlist.defines.next->data->value), 0);
-    CU_ASSERT_EQUAL(playlist.defines.next->data->name, NULL);
-    CU_ASSERT_EQUAL(playlist.defines.next->data->query_param, NULL);
+    CU_ASSERT_EQUAL(playlist.defines.next->data->type, DEFINE_TYPE_IMPORT);
 
     hlsparse_media_playlist_term(&playlist);
 }
