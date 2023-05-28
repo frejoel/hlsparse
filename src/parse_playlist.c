@@ -336,6 +336,9 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
         pt += parse_segment(pt, size - (pt - src), segment);
 
         segment->type = dest->next_segment_type;
+        // reset the segment type
+        dest->next_segment_type = SEGMENT_TYPE_FULL;
+
         segment->bitrate = dest->next_segment_bitrate;
         segment->sequence_num = dest->next_segment_media_sequence;
         ++(dest->next_segment_media_sequence);

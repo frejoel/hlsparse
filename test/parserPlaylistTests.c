@@ -710,11 +710,15 @@ void media_playlist_parse_test4(void)
 #EXT-X-PLAYLIST-TYPE:VOD\n\
 #EXT-X-DEFINE:NAME=\"var1\",VALUE=\"val1\"\n\
 #EXT-X-DEFINE:IMPORT=\"var2\",VALUE=\"val2\"\n\
+#EXT-X-BITRATE:2800\n\
 #EXTINF:0.033,\n\
 ADAP/00060/1001_ADAP_00001.ts\n\
 #EXT-X-GAP\n\
 #EXTINF:4.972,\n\
 ADAP/00060/1001_ADAP_00002.ts\n\
+#EXT-X-BITRATE:2200\n\
+#EXTINF:4.972,\n\
+ADAP/00060/1001_ADAP_00003.ts\n\
 #EXT-X-ENDLIST\n";
 
     int res = hlsparse_media_playlist(src, strlen(src), &playlist);
@@ -730,7 +734,7 @@ ADAP/00060/1001_ADAP_00002.ts\n\
     CU_ASSERT_EQUAL(playlist.iframes_only, HLS_FALSE);
     CU_ASSERT_EQUAL(playlist.start.time_offset, 0.f);
     CU_ASSERT_EQUAL(playlist.start.precise, HLS_FALSE);
-    CU_ASSERT_EQUAL(playlist.nb_segments, 2);
+    CU_ASSERT_EQUAL(playlist.nb_segments, 3);
     CU_ASSERT_EQUAL(playlist.nb_maps, 0);
     CU_ASSERT_EQUAL(playlist.nb_dateranges, 0);
     CU_ASSERT_EQUAL(playlist.nb_defines, 2);
@@ -744,9 +748,17 @@ ADAP/00060/1001_ADAP_00002.ts\n\
     CU_ASSERT_EQUAL(strcmp("val2", playlist.defines.next->data->value), 0);
     CU_ASSERT_EQUAL(playlist.defines.next->data->type, DEFINE_TYPE_IMPORT);
 
-    CU_ASSERT_EQUAL(playlist.nb_segments, 2);
-    CU_ASSERT_EQUAL(playlist.segments.next->data, playlist.last_segment);
-    CU_ASSERT_EQUAL(playlist.last_segment->type, SEGMENT_TYPE_FULL_GAP);
+    CU_ASSERT_EQUAL(playlist.nb_segments, 3);
+
+    CU_ASSERT_EQUAL(playlist.segments.data->type, SEGMENT_TYPE_FULL);
+    CU_ASSERT_EQUAL(playlist.segments.data->bitrate, 2800);
+
+    CU_ASSERT_EQUAL(playlist.segments.next->data->type, SEGMENT_TYPE_FULL_GAP);
+    CU_ASSERT_EQUAL(playlist.segments.next->data->bitrate, 2800);
+    
+    CU_ASSERT_EQUAL(playlist.segments.next->next->data->type, SEGMENT_TYPE_FULL);
+    CU_ASSERT_EQUAL(playlist.segments.next->next->data->bitrate, 2200);
+    CU_ASSERT_EQUAL(playlist.segments.next->next->data, playlist.last_segment);
 
     hlsparse_media_playlist_term(&playlist);
 }
