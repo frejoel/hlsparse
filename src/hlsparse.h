@@ -160,6 +160,8 @@
 #define IMPORT                      "IMPORT"
 #define QUERYPARAM                  "QUERYPARAM"
 #define PARTTARGET                  "PART-TARGET"
+#define INDEPENDENT                 "INDEPENDENT"
+#define GAP                         "GAP"
 
 #ifdef __cplusplus
 extern "C" {
@@ -300,6 +302,7 @@ typedef struct {
     char *uri;
     bool_t discontinuity;
     bool_t pdt_discontinuity;
+    bool_t independent;
     timestamp_t pdt;
     timestamp_t pdt_end;
     byte_range_t byte_range;

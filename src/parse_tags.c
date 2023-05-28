@@ -1402,10 +1402,11 @@ int parse_media(const char *src, size_t size, media_t *dest)
 }
 
 /**
- * Parses an HLS EXT-X-I-FRAME-STREAM-INF tag into the specified object.
+ * Parses an HLS #EXT-INF tag into the specified object.
  *
- * @param src The raw IFrameStreamInf data to parse.
- * @param size The length of src
+ * @param src The raw data to parse.
+ * @param size The length of src.
+ * @param dest The segment_t object to be populated.
  */
 int parse_segment(const char *src, size_t size, segment_t *dest)
 {
@@ -1435,10 +1436,11 @@ int parse_segment(const char *src, size_t size, segment_t *dest)
 }
 
 /**
- * Parses an HLS EXT-X-I-FRAME-STREAM-INF tag into the specified object.
+ * Parses an HLS #EXT-X-INF uri.
  *
- * @param src The raw IFrameStreamInf data to parse.
+ * @param src The raw data to parse.
  * @param size The length of src
+ * @param dest The current media playlist
  */
 int parse_segment_uri(const char *src, size_t size, media_playlist_t *dest)
 {
@@ -1539,6 +1541,55 @@ int parse_session_data(const char*src, size_t size, session_data_t *dest)
     }
 
     return res;
+}
+
+/**
+ * Parses an HLS EXT-X-PART tag into the specified object.
+ *
+ * @param src The raw data to parse.
+ * @param size The length of src
+ * @param dest The segment to populate with the data
+ */
+int parse_partial_segment(const char *src, size_t size, segment_t *dest)
+{
+    if(!src || !size || !dest) {
+        return 0;
+    }
+
+    const char *pt = src;
+    while(!(*pt == '\0' || *pt == '\r' || *pt == '\n' || pt >= &src[size])) {
+        if(*pt == ':') {
+            ++pt;
+        }
+        if(EQUAL(pt, URI)) {
+            ++pt; // get past the '=' sign
+            pt += parse_attrib_str(pt, &dest->uri, size - (pt - src));
+        } else if(EQUAL(pt, DURATION)) {
+            ++pt; // get past the '=' sign
+            pt += parse_str_to_float(pt, &dest->duration, size - (pt - src));
+        } else if(EQUAL(pt, INDEPENDENT)) {
+            ++pt; // get past the '=' sign
+            if(EQUAL(pt, YES)) {
+                dest->independent = HLS_TRUE;
+            }else if(EQUAL(pt, NO)) {
+                dest->independent = HLS_FALSE;
+            }
+        } else if(EQUAL(pt, BYTERANGE)) {
+            pt += 2; // get past the '="'
+            pt += parse_byte_range(pt, size - (pt - src), &dest->byte_range);
+        } else if(EQUAL(pt, GAP)) {
+            ++pt; // get past the '=' sign
+            if(EQUAL(pt, YES)) {
+                dest->type = SEGMENT_TYPE_PART_GAP;
+            }else if(EQUAL(pt, NO)) {
+                dest->type = SEGMENT_TYPE_PART;
+            }
+        } else {
+            ++pt;
+        }
+    }
+
+    return pt - src;
 }
 
 /**

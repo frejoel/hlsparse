@@ -29,6 +29,7 @@ char *str_utils_nappend(char *str, const char *append, size_t size);
 char *str_utils_join(const char *str, const char *join);
 char *str_utils_njoin(const char *str, const char *join, size_t size);
 char *path_combine(char **dest, const char *base, const char *path);
+void add_segment_to_playlist(media_playlist_t *dest, segment_t *segment);
 
 // Tag parsing
 int parse_line_to_str(const char *src, char **dest, size_t size);
@@ -108,6 +109,7 @@ int parse_media_tag(const char *src, size_t size, media_t *media);
 int parse_segment(const char *src, size_t size, segment_t *segment);
 int parse_segment_tag(const char *src, size_t size, segment_t *segment);
 int parse_segment_uri(const char *src, size_t size, media_playlist_t *dest);
+int parse_partial_segment(const char *src, size_t size, segment_t *segment);
 int parse_session_data(const char *src, size_t size, session_data_t *session_data);
 int parse_session_data_tag(const char *src, size_t size,session_data_t *session_data);
 int parse_start(const char *src, size_t size, start_t *start);

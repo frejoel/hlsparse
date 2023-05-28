@@ -48,3 +48,26 @@ if (def->type == DEFINE_TYPE_IMPORT) {
         printf("%s\n", def->value);
         ...
 ```
+
+### EXT-X-PART
+Partial Segments can be identied by the `type` in the `segment_t` structure.
+Note that the `type` can indicate the segment is also a gap segment.
+```
+segment_t* seg = ...
+if (seg->type & SEGMENT_TYPE_PART) {
+    if (seg->type & SEGMENT_TYPE_GAP) {
+        printf("this ia a Partial segment gap.\n");
+    } else {
+        printf("this is a Parial segment.\n");
+    }
+} else if (seg->type & SEGMENT_TYPE_FULL) {
+    if (seg->type & SEGMENT_TYPE_GAP) {
+        printf("this ia a full segment gap.\n");
+    } else {
+        printf("this is a full segment.\n");
+    }
+}
+```
+The `independent` parameter on a `segment_t` object is supported only for Partial Segments. For full (standard) segments, `independent` will always be `HLS_TRUE`.
+
+The `media_sequence` of the Partial Segments that create a full segment all use the same value.

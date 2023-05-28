@@ -328,6 +328,39 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
 
             ++(dest->nb_defines);
         }
+    } else if(EQUAL(pt, EXTXPART)) {
+        ++pt; // get past the ':'
+        segment_t *segment = hls_malloc(sizeof(segment_t));
+        hlsparse_segment_init(segment);
+
+        pt += parse_partial_segment(pt, size - (pt - src), segment);
+
+        segment->bitrate = dest->next_segment_bitrate;
+        segment->sequence_num = dest->next_segment_media_sequence;
+
+        // if the previous segment was a partial segment, use this to determine the pdt
+        if(dest->last_segment && (dest->last_segment->type & SEGMENT_TYPE_PART) > 0) {
+            segment->pdt = dest->last_segment->pdt_end;
+        } else {
+            segment->pdt = dest->next_segment_pdt;
+        }
+        segment->pdt_end = segment->pdt + (timestamp_t)(segment->duration * 1000.f);
+
+        // if this isn't the first segment, check to see if there is a
+        // discontinuity between this segment and the one before it
+        segment->pdt_discontinuity = HLS_FALSE;
+
+        if(dest->nb_segments > 0) {
+            if(segment->pdt != dest->last_segment->pdt_end) {
+                segment->pdt_discontinuity = HLS_TRUE;
+            }
+        }
+
+        // add this segment to the playlists duration
+        dest->duration += segment->duration;
+
+        add_segment_to_playlist(dest, segment);
+
     } else if(EQUAL(pt, EXTINF)) {
         ++pt;
         segment_t *segment = hls_malloc(sizeof(segment_t));
@@ -335,7 +368,7 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
 
         pt += parse_segment(pt, size - (pt - src), segment);
 
-        segment->type = dest->next_segment_type;
+        segment->type = dest->next_segment_type | SEGMENT_TYPE_FULL;
         // reset the segment type
         dest->next_segment_type = SEGMENT_TYPE_FULL;
 
@@ -344,9 +377,7 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
         ++(dest->next_segment_media_sequence);
 
         segment->pdt = dest->next_segment_pdt;
-        segment->pdt_end = dest->next_segment_pdt +
-                           (timestamp_t)(segment->duration * 1000.f);
-
+        segment->pdt_end = segment->pdt + (timestamp_t)(segment->duration * 1000.f);
         // increase the segment PDT so that the next segment gets a valid value
         dest->next_segment_pdt = segment->pdt_end;
 
@@ -360,27 +391,13 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
             }
         }
 
-        // add the segment to the playlist
-        segment_list_t *next = &dest->segments;
+        // add this segment's duration to the playlists duration provided this segment
+        // replaces partial segments
+        if(!dest->last_segment || (dest->last_segment->type & SEGMENT_TYPE_PART) == 0) {
+            dest->duration += segment->duration;
+        }
 
-        while(next) {
-            if(!next->data) {
-                next->data = segment;
-                break;
-            } else if(!next->next) {
-                next->next = hls_malloc(sizeof(segment_list_t));
-                hlsparse_segment_list_init(next->next);
-                next->next->data = segment;
-                break;
-            }
-            next = next->next;
-        };
-
-        dest->last_segment = segment;
-        ++(dest->nb_segments);
-
-        // add this segment to the playlists duration
-        dest->duration += segment->duration;
+        add_segment_to_playlist(dest, segment);
 
     } else if(EQUAL(pt, EXTXKEY)) {
         ++pt;

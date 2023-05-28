@@ -36,7 +36,7 @@ int main() {
     printf("read a total of %d bytes parsing the multivariant playlist source\n", read);
 
     // print out all the StreamInf bitrates that were found
-    stream_inf_list_t *streamInf = &myMaster.stream_infs;
+    stream_inf_list_t *streamInf = &myMultivariant.stream_infs;
     int count = 0;
     while(streamInf) {
         printf("StreamInf %d Uri: %s\n", count, streamInf->data->uri);

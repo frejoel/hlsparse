@@ -87,3 +87,25 @@ char *str_utils_njoin(const char *str, const char *join, size_t size)
 
     return out;
 }
+
+void add_segment_to_playlist(media_playlist_t *dest, segment_t *segment)
+{
+    // add the segment to the playlist
+    segment_list_t *next = &dest->segments;
+
+    while(next) {
+        if(!next->data) {
+            next->data = segment;
+            break;
+        } else if(!next->next) {
+            next->next = hls_malloc(sizeof(segment_list_t));
+            hlsparse_segment_list_init(next->next);
+            next->next->data = segment;
+            break;
+        }
+        next = next->next;
+    };
+
+    dest->last_segment = segment;
+    ++(dest->nb_segments);
+}
