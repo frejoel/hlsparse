@@ -91,9 +91,9 @@
 #define EXTXDEFINE                  "EXT-X-DEFINE"
 #define EXTXPARTINF                 "EXT-X-PART-INF"
 #define EXTXGAP                     "EXT-X-GAP"
+#define EXTXBITRATE                 "EXT-X-BITRATE"
 // TODO
 #define EXTXSERVERCONTROL           "EXT-X-SERVER-CONTROL"
-#define EXTXBITRATE                 "EXT-X-BITRATE"
 #define EXTXPART                    "EXT-X-PART"
 #define EXTXSKIP                    "EXT-X-SKIP"
 #define EXTXPRELOADHINT             "EXT-X-PRELOAD-HINT"
@@ -397,7 +397,7 @@ typedef struct define_list {
 } define_list_t;
 
 /**
- * Master Playlist Structure.
+ * Mutlivariant Playlist Structure.
  */
 typedef struct {
     int                         version;
@@ -416,7 +416,7 @@ typedef struct {
     int                         nb_session_keys;
     define_list_t               defines;
     int                         nb_defines;
-} master_t;
+} multivariant_playlist_t;
 
 /**
  * Media Playlist Structure.
@@ -481,12 +481,12 @@ HLSCode hlsparse_global_init(void);
 HLSCode hlsparse_global_init_mem(hlsparse_malloc_callback m, hlsparse_free_callback f);
 
 /**
- * Initializes a master_t object
+ * Initializes a multivariant_playlist_t object
  *
  * @param dest The object to initialize
  * @returns HLS_OK on success.
  */
-HLSCode hlsparse_master_init(master_t *dest);
+HLSCode hlsparse_multivariant_playlist_init(multivariant_playlist_t *dest);
 
 /**
  * Initializes a media_playlist_t object
@@ -497,16 +497,17 @@ HLSCode hlsparse_master_init(master_t *dest);
 HLSCode hlsparse_media_playlist_init(media_playlist_t *dest);
 
 /**
- * Cleans up a master_t object freeing any resources.
- * The master_t object itself is not destroyed in the process.
- * Call parse_master_init to reinitialize the master_t after if has been destroyed.
+ * Cleans up a multivariant_playlist_t object freeing any resources.
+ * The multivariant_playlist_t object itself is not destroyed in the process.
+ * Call parse_multivariant_playlist_init to reinitialize the multivariant_playlist_t
+ * after it has been destroyed.
  * This will free any associated pointers, care must be taken when manipulating or
  * creating playlists from scratch and attempting to terminate them.
  *
- * @param dest The master_t object to destroy
+ * @param dest The multivariant_playlist_t object to destroy
  * @returns HLS_OK on success.
  */
-HLSCode hlsparse_master_term(master_t *dest);
+HLSCode hlsparse_multivariant_playlist_term(multivariant_playlist_t *dest);
 
 /**
  * Cleans up a media_playlist_t object freeing any resources.
@@ -524,12 +525,12 @@ HLSCode hlsparse_media_playlist_term(media_playlist_t *dest);
 /**
  * parses an HLS string of data into a media_playlist_t struct
  *
- * @param src The raw string of data that represents an HLS master playlist
+ * @param src The raw string of data that represents an HLS multivariant playlist
  * @param size The length of src
- * @param dest The master_t to parse the source text into
+ * @param dest The multivariant_playlist_t to parse the source text into
  * @returns The number og bytes read.
  */
-int hlsparse_master(const char *src, size_t size, master_t *dest);
+int hlsparse_multivariant_playlist(const char *src, size_t size, multivariant_playlist_t *dest);
 
 /**
  * parses an HLS string of data into a media_playlist_t struct
@@ -542,21 +543,21 @@ int hlsparse_master(const char *src, size_t size, master_t *dest);
 int hlsparse_media_playlist(const char *src, size_t size, media_playlist_t *dest);
 
 /**
- * writes an HLS master playlist from a master_t structure.
+ * writes an HLS multivariant playlist from a multivariant_playlist_t structure.
  * 
  * @param dest A NULL pointer which will be assiged to the output UTF-8 string.
  * @param dest_size The size of the string assigned to 'dest'.
- * @param master The master playlist structure used to write a playlist from.
+ * @param multivariant The multivariant playlist structure used to write a playlist from.
  * @returns HLS_OK on success.
  */
-HLSCode hlswrite_master(char **dest, int *dest_size, master_t *master);
+HLSCode hlswrite_multivariant_playlist(char **dest, int *dest_size, multivariant_playlist_t *multivariant);
 
 /**
  * writes an HLS media playlist from a media_playlist_t structure.
  * 
  * @param dest A NULL pointer which will be assiged to the output UTF-8 string.
  * @param dest_size The size of the string assigned to 'dest'.
- * @param master The media playlist structure used to write a playlist from.
+ * @param playlist The media playlist structure used to write a playlist from.
  * @returns HLS_OK on success.
  */
 HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist);

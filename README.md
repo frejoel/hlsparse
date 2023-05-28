@@ -1,5 +1,5 @@
 # HLS Parse
-Library for parsing an HLS master and media playlist into a C object structure.
+Library for parsing an HLS Multivariant Playlist and Media Playlist into a C object structure.
 Supports v13 of the 2nd edition specification.
 See https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis-13 for details.
 
@@ -13,13 +13,13 @@ For a more thorough example see `examples/example.c` in the source code.
     // Global initialization of the library.
     HLSCode res = hlsparse_global_init();
 
-    // create a master playlist structure.
-    master_t myMaster;
-    res = hlsparse_master_init(&myMaster);
+    // create a multivariant playlist structure.
+    multivariant_playlist_t myMultiVariant;
+    res = hlsparse_multivariant_playlist_init(&myMultiVariant);
 
-    // parse some playlist data into our master structure.
-    masterSrc = /* char * utf8 master playlist string */
-    int read = hlsparse_master(masterSrc, strlen(masterSrc), &myMaster);
+    // parse some playlist data into our multivariant playlist structure.
+    multivariantSrc = /* char * utf8 multivariant playlist string */
+    int read = hlsparse_multivariant_playlist(multivariantSrc, strlen(multivariantSrc), &myMultiVariant);
 ```
 
 ## Notes

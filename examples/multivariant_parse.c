@@ -42,26 +42,26 @@ int main() {
         return -1;
     }
 
-    // create a master playlist structure
-    master_t myMaster;
-    res = hlsparse_master_init(&myMaster);
+    // create a multivariant playlist structure
+    multivariant_playlist_t myMultivariant;
+    res = hlsparse_multivariant_playlist_init(&myMultivariant);
     if(res != HLS_OK) {
-        fprintf(stderr, "failed to initialize master playlist structure");
+        fprintf(stderr, "failed to initialize multivariant playlist structure");
         return -1;
     }
 
-    char *m3u8 = read_file("test_master.m3u8");
-    printf("test_master.m3u8\n%s", m3u8);
+    char *m3u8 = read_file("test_multivariant.m3u8");
+    printf("test_multivariant.m3u8\n%s", m3u8);
 
-    const char * masterSrc = m3u8;
-    // parse the playlist information into our master structure
-    int read = hlsparse_master(masterSrc, strlen(masterSrc), &myMaster);
-    printf("read a total of %d bytes parsing the master playlist source\n", read);
+    const char * multivariantSrc = m3u8;
+    // parse the playlist information into our multivariant structure
+    int read = hlsparse_multivariant_playlist(multivariantSrc, strlen(multivariantSrc), &myMultivariant);
+    printf("read a total of %d bytes parsing the multivariant playlist source\n", read);
 
-    printf("num of streams: %d, num of iframe_streams, %d, num of keys: %d\n", myMaster.nb_stream_infs, myMaster.nb_iframe_stream_infs, myMaster.nb_session_keys);
+    printf("num of streams: %d, num of iframe_streams, %d, num of keys: %d\n", myMultivariant.nb_stream_infs, myMultivariant.nb_iframe_stream_infs, myMultivariant.nb_session_keys);
 
     // print out all the StreamInf bitrates that were found
-    stream_inf_list_t *streamInf = &myMaster.stream_infs;
+    stream_inf_list_t *streamInf = &myMultivariant.stream_infs;
     int count = 0;
     while(streamInf && streamInf->data) {
         printf("StreamInf %d Uri: %s\n", count, streamInf->data->uri);
@@ -74,7 +74,7 @@ int main() {
         streamInf = streamInf->next;
     }
 
-    media_list_t *mediaInf = &myMaster.media;
+    media_list_t *mediaInf = &myMultivariant.media;
     count = 0;
     while (mediaInf && mediaInf->data) {
         printf("Media %d Uri: %s\n", count, mediaInf->data->uri);
@@ -82,7 +82,7 @@ int main() {
         mediaInf = mediaInf->next;
     }
 
-    session_data_list_t *sessInf= &myMaster.session_data;
+    session_data_list_t *sessInf= &myMultivariant.session_data;
     count = 0;
     while (sessInf && sessInf->data) {
         printf("Sess %d Uri: %s\n", count, sessInf->data->uri);

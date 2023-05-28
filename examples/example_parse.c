@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-const char *masterSrc = "#EXTM3U\n"\
+const char *multivariantSrc = "#EXTM3U\n"\
 "#EXT-X-VERSION:7\n"\
 "#EXT-X-MEDIA:TYPE=VIDEO,URI=\"http://www.test.com\",GROUP-ID=\"groupId\",NAME=\"media\"\n"\
 "#EXT-X-STREAM-INF:BANDWIDTH=900000,CODECS=\"mp4a.40.2,avc1.4d401e\",RESOLUTION=1280x720\n"\
@@ -23,17 +23,17 @@ int main() {
         return -1;
     }
 
-    // create a master playlist structure
-    master_t myMaster;
-    res = hlsparse_master_init(&myMaster);
+    // create a multivariant playlist structure
+    multivariant_playlist_t myMultivariant;
+    res = hlsparse_multivariant_playlist_init(&myMultivariant);
     if(res != HLS_OK) {
-        fprintf(stderr, "failed to initialize master playlist structure");
+        fprintf(stderr, "failed to initialize multivariant playlist structure");
         return -1;
     }
 
-    // parse the playlist information into our master structure
-    int read = hlsparse_master(masterSrc, strlen(masterSrc), &myMaster);
-    printf("read a total of %d bytes parsing the master playlist source\n", read);
+    // parse the playlist information into our multivariant structure
+    int read = hlsparse_multivariant_playlist(multivariantSrc, strlen(multivariantSrc), &myMultivariant);
+    printf("read a total of %d bytes parsing the multivariant playlist source\n", read);
 
     // print out all the StreamInf bitrates that were found
     stream_inf_list_t *streamInf = &myMaster.stream_infs;

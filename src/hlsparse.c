@@ -24,13 +24,13 @@ HLSCode hlsparse_init_mem(hlsparse_malloc_callback m, hlsparse_free_callback f)
     return HLS_OK;
 }
 
-HLSCode hlsparse_master_init(master_t *dest)
+HLSCode hlsparse_multivariant_playlist_init(multivariant_playlist_t *dest)
 {
     if(!dest) {
         return HLS_ERROR;
     }
 
-    memset(dest, 0, sizeof(master_t));
+    memset(dest, 0, sizeof(multivariant_playlist_t));
     return HLS_OK;
 }
 
@@ -44,7 +44,7 @@ HLSCode hlsparse_media_playlist_init(media_playlist_t *dest)
     return HLS_OK;
 }
 
-HLSCode hlsparse_master_term(master_t *dest)
+HLSCode hlsparse_multivariant_playlist_term(multivariant_playlist_t *dest)
 {
     if(!dest) {
         return HLS_ERROR;
@@ -87,7 +87,7 @@ HLSCode hlsparse_media_playlist_term(media_playlist_t *dest)
     return HLS_OK;
 }
 
-int hlsparse_master(const char *src, size_t size, master_t *dest)
+int hlsparse_multivariant_playlist(const char *src, size_t size, multivariant_playlist_t *dest)
 {
     int res = 0;
 
@@ -100,7 +100,7 @@ int hlsparse_master(const char *src, size_t size, master_t *dest)
         while (*pt != '\0' && pt < end) {
             if (*pt == '#') {
                 ++pt;
-                pt += parse_master_tag(pt, size - (pt - src), dest);
+                pt += parse_multivariant_playlist_tag(pt, size - (pt - src), dest);
             } else {
                 ++pt;
             }

@@ -80,9 +80,9 @@ const char* find_relative_path(const char *path, const char *base)
     return path;
 }
 
-HLSCode hlswrite_master(char **dest, int *dest_size, master_t *master)
+HLSCode hlswrite_multivariant_playlist(char **dest, int *dest_size, multivariant_playlist_t *multivariant)
 {
-    if(!dest || dest_size <= 0 || !master) {
+    if(!dest || dest_size <= 0 || !multivariant) {
         return HLS_ERROR;
     }
 
@@ -90,11 +90,11 @@ HLSCode hlswrite_master(char **dest, int *dest_size, master_t *master)
     page_t *latest = root;
     
     ADD_TAG(EXTM3U);
-    if(master->version > 0) {
-        ADD_TAG_INT(EXTXVERSION, master->version);
+    if(multivariant->version > 0) {
+        ADD_TAG_INT(EXTXVERSION, multivariant->version);
     }
-    if(master->nb_defines > 0) {
-        define_list_t *def = &master->defines;
+    if(multivariant->nb_defines > 0) {
+        define_list_t *def = &multivariant->defines;
         while(def && def->data) {
             if(def->data->type == DEFINE_TYPE_NAME) {
                 START_TAG_STR(EXTXDEFINE, NAME, def->data->key);
@@ -108,10 +108,10 @@ HLSCode hlswrite_master(char **dest, int *dest_size, master_t *master)
             def = def->next;
         }
     }
-    ADD_TAG_IF_TRUE(EXTXINDEPENDENTSEGMENTS, master->independent_segments);
-    ADD_XSTART_TAG_OPTL(master->start);
+    ADD_TAG_IF_TRUE(EXTXINDEPENDENTSEGMENTS, multivariant->independent_segments);
+    ADD_XSTART_TAG_OPTL(multivariant->start);
 
-    media_list_t *media = &master->media;
+    media_list_t *media = &multivariant->media;
     while(media && media->data) {
         switch(media->data->type) {
             case MEDIA_TYPE_AUDIO: START_TAG_ENUM(EXTXMEDIA, TYPE, AUDIO); break;
@@ -120,8 +120,8 @@ HLSCode hlswrite_master(char **dest, int *dest_size, master_t *master)
             case MEDIA_TYPE_CLOSEDCAPTIONS: START_TAG_ENUM(EXTXMEDIA, TYPE, CLOSEDCAPTIONS); break;
         }
 
-        if(master->uri) {
-            const char *uri = find_relative_path(media->data->uri, master->uri);
+        if(multivariant->uri) {
+            const char *uri = find_relative_path(media->data->uri, multivariant->uri);
             ADD_PARAM_STR_OPTL(URI, uri);
         }else{
             ADD_PARAM_STR_OPTL(URI, media->data->uri);
@@ -153,7 +153,7 @@ HLSCode hlswrite_master(char **dest, int *dest_size, master_t *master)
     }
 
     // stream infs
-    stream_inf_list_t *stream_inf_list = &master->stream_infs;
+    stream_inf_list_t *stream_inf_list = &multivariant->stream_infs;
     while(stream_inf_list && stream_inf_list->data) {
         stream_inf_t *inf = stream_inf_list->data;
         START_TAG_INT(EXTXSTREAMINF, BANDWIDTH, (int)inf->bandwidth);
@@ -170,8 +170,8 @@ HLSCode hlswrite_master(char **dest, int *dest_size, master_t *master)
         ADD_PARAM_STR_OPTL(SUBTITLES, inf->subtitles);
         ADD_PARAM_STR_OPTL(CLOSEDCAPTIONS, inf->closed_captions);
         END_TAG();
-        if(master->uri) {
-            const char *uri = find_relative_path(inf->uri, master->uri);
+        if(multivariant->uri) {
+            const char *uri = find_relative_path(inf->uri, multivariant->uri);
             ADD_URI(uri);
         }else{
             ADD_URI(inf->uri);
@@ -179,7 +179,7 @@ HLSCode hlswrite_master(char **dest, int *dest_size, master_t *master)
         stream_inf_list = stream_inf_list->next;
     }
 
-    iframe_stream_inf_list_t *if_stream_inf_list = &master->iframe_stream_infs;
+    iframe_stream_inf_list_t *if_stream_inf_list = &multivariant->iframe_stream_infs;
     while(if_stream_inf_list && if_stream_inf_list->data) {
         iframe_stream_inf_t *inf = if_stream_inf_list->data;
         START_TAG_INT(EXTXIFRAMESTREAMINF, BANDWIDTH, (int)inf->bandwidth);
@@ -191,8 +191,8 @@ HLSCode hlswrite_master(char **dest, int *dest_size, master_t *master)
             case HDCP_LEVEL_TYPE0: latest = pgprintf(latest, ",%s=%s", HDCPLEVEL, TYPE0); break;
         }
         ADD_PARAM_STR_OPTL(VIDEO, inf->video);
-        if(master->uri) {
-            const char *uri = find_relative_path(inf->uri, master->uri);
+        if(multivariant->uri) {
+            const char *uri = find_relative_path(inf->uri, multivariant->uri);
             ADD_PARAM_STR(URI, uri);
         }else{
             ADD_PARAM_STR(URI, inf->uri);
@@ -202,13 +202,13 @@ HLSCode hlswrite_master(char **dest, int *dest_size, master_t *master)
         if_stream_inf_list = if_stream_inf_list->next;
     } 
 
-    session_data_list_t *sess_data = &master->session_data;
+    session_data_list_t *sess_data = &multivariant->session_data;
     while(sess_data && sess_data->data) {
         session_data_t *sess = sess_data->data;
         START_TAG_STR(EXTXSESSIONDATA, DATAID, sess->data_id);
         ADD_PARAM_STR_OPTL(VALUE, sess->value);
-        if(master->uri) {
-            const char *uri = find_relative_path(sess->uri, master->uri);
+        if(multivariant->uri) {
+            const char *uri = find_relative_path(sess->uri, multivariant->uri);
             ADD_PARAM_STR_OPTL(URI, uri);
         }else{
             ADD_PARAM_STR_OPTL(URI, sess->uri);
@@ -218,7 +218,7 @@ HLSCode hlswrite_master(char **dest, int *dest_size, master_t *master)
         sess_data = sess_data->next;
     }
 
-    key_list_t *key_list = &master->session_keys;
+    key_list_t *key_list = &multivariant->session_keys;
     while(key_list && key_list->data) {
         hls_key_t *key = key_list->data;
         switch(key->method) {
@@ -226,8 +226,8 @@ HLSCode hlswrite_master(char **dest, int *dest_size, master_t *master)
             case KEY_METHOD_AES128: START_TAG_ENUM(EXTXSESSIONKEY, METHOD, AES128); break;
             case KEY_METHOD_SAMPLEAES: START_TAG_ENUM(EXTXSESSIONKEY, METHOD, SAMPLEAES); break;
         }
-        if(master->uri) {
-            const char *uri = find_relative_path(key->uri, master->uri);
+        if(multivariant->uri) {
+            const char *uri = find_relative_path(key->uri, multivariant->uri);
             ADD_PARAM_STR_OPTL(URI, uri);
         }else {
             ADD_PARAM_STR_OPTL(URI, key->uri);

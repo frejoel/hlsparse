@@ -19,14 +19,14 @@ int clean(void)
     return 0;
 }
 
-void write_master_test(void)
+void write_multivariant_test(void)
 {
-    master_t master;
-    hlsparse_master_init(&master);
-    master.version = 4;
-    master.independent_segments = HLS_TRUE;
-    master.start.time_offset = -2.f;
-    master.start.precise = HLS_FALSE;
+    multivariant_playlist_t multivariant;
+    hlsparse_multivariant_playlist_init(&multivariant);
+    multivariant.version = 4;
+    multivariant.independent_segments = HLS_TRUE;
+    multivariant.start.time_offset = -2.f;
+    multivariant.start.precise = HLS_FALSE;
 
     media_t media0;
     hlsparse_media_init(&media0);
@@ -43,8 +43,8 @@ void write_master_test(void)
     media0.is_default = HLS_TRUE;
     media0.auto_select = HLS_TRUE;
 
-    master.media.data = &media0;
-    master.media.next = NULL;
+    multivariant.media.data = &media0;
+    multivariant.media.next = NULL;
 
     stream_inf_t inf_0;
     hlsparse_stream_inf_init(&inf_0);
@@ -60,7 +60,7 @@ void write_master_test(void)
     inf_0.subtitles = "group-three";
     inf_0.closed_captions = "cc";
     inf_0.uri = "http://www.example.com/variant_01.m3u8";
-    master.stream_infs.data = &inf_0;
+    multivariant.stream_infs.data = &inf_0;
 
     stream_inf_list_t inf_list_1;
     stream_inf_t inf_1;
@@ -79,7 +79,7 @@ void write_master_test(void)
     inf_1.uri = "http://www.example.com/variant_02.m3u8";
     inf_list_1.data = &inf_1;
     inf_list_1.next = NULL;
-    master.stream_infs.next = &inf_list_1;
+    multivariant.stream_infs.next = &inf_list_1;
 
     iframe_stream_inf_t ifinf_0;
     hlsparse_iframe_stream_inf_init(&ifinf_0);
@@ -91,15 +91,15 @@ void write_master_test(void)
     ifinf_0.hdcp_level = HDCP_LEVEL_NONE;
     ifinf_0.video = "group-two";
     ifinf_0.uri = "http://www.example.com/iframe_variant_01.m3u8";
-    master.iframe_stream_infs.data = &ifinf_0;
+    multivariant.iframe_stream_infs.data = &ifinf_0;
 
     session_data_t sess;
     sess.data_id = "com.example.move.trailer";
     sess.value = "this shouldn't be here if 'uri' is present";
     sess.uri = "http://www.example.com/session_info.json";
     sess.language = "en-US";
-    master.session_data.data = &sess;
-    master.session_data.next = NULL;
+    multivariant.session_data.data = &sess;
+    multivariant.session_data.next = NULL;
 
     hls_key_t key;
     key.method = KEY_METHOD_AES128;
@@ -107,15 +107,15 @@ void write_master_test(void)
     key.uri = "http://www.example.com/keys/01.key";
     key.key_format = "identity";
     key.key_format_versions = "1/2/3";
-    master.session_keys.data = &key;
-    master.session_keys.next = NULL;
+    multivariant.session_keys.data = &key;
+    multivariant.session_keys.next = NULL;
 
     char *out = NULL;
     int size = 0;
 
-    HLSCode res = hlswrite_master(&out, &size, &master);
+    HLSCode res = hlswrite_multivariant_playlist(&out, &size, &multivariant);
 
-    const char *master_output = 
+    const char *multivariant_output = 
 "#EXTM3U\n\
 #EXT-X-VERSION:4\n\
 #EXT-X-INDEPENDENT-SEGMENTS\n\
@@ -129,17 +129,17 @@ http://www.example.com/variant_02.m3u8\n\
 #EXT-X-SESSION-DATA:DATA-ID=\"com.example.move.trailer\",VALUE=\"this shouldn\'t be here if \'uri\' is present\",URI=\"http://www.example.com/session_info.json\",LANGUAGE=\"en-US\"\n\
 #EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"http://www.example.com/keys/01.key\",IV=0x0102030405060708090A0B0C0D0E0F10,KEYFORMAT=\"identity\",KEYFORMATVERSIONS=\"1/2/3\"\n";
     
-    CU_ASSERT_EQUAL(strcmp(master_output, out), 0);
+    CU_ASSERT_EQUAL(strcmp(multivariant_output, out), 0);
 }
 
-void write_master_test2(void)
+void write_multivariant_test2(void)
 {
-    master_t master;
-    hlsparse_master_init(&master);
-    master.version = 12;
-    master.independent_segments = HLS_TRUE;
-    master.start.time_offset = -2.f;
-    master.start.precise = HLS_TRUE;
+    multivariant_playlist_t multivariant;
+    hlsparse_multivariant_playlist_init(&multivariant);
+    multivariant.version = 12;
+    multivariant.independent_segments = HLS_TRUE;
+    multivariant.start.time_offset = -2.f;
+    multivariant.start.precise = HLS_TRUE;
 
     define_t defines[3];
     define_list_t define_lists[2];
@@ -157,12 +157,12 @@ void write_master_test2(void)
     defines[2].key = "var3";
     defines[2].value = "query_param-3";
     defines[2].type = DEFINE_TYPE_QUERYPARAM;
-    master.defines.data = &defines[0];
-    master.defines.next = &define_lists[0];
-    master.defines.next->data = &defines[1];
-    master.defines.next->next = &define_lists[1];
-    master.defines.next->next->data = &defines[2];
-    master.nb_defines = 3;
+    multivariant.defines.data = &defines[0];
+    multivariant.defines.next = &define_lists[0];
+    multivariant.defines.next->data = &defines[1];
+    multivariant.defines.next->next = &define_lists[1];
+    multivariant.defines.next->next->data = &defines[2];
+    multivariant.nb_defines = 3;
 
     media_t media0;
     hlsparse_media_init(&media0);
@@ -179,8 +179,8 @@ void write_master_test2(void)
     media0.is_default = HLS_TRUE;
     media0.auto_select = HLS_TRUE;
 
-    master.media.data = &media0;
-    master.media.next = NULL;
+    multivariant.media.data = &media0;
+    multivariant.media.next = NULL;
 
     stream_inf_t inf_0;
     hlsparse_stream_inf_init(&inf_0);
@@ -196,7 +196,7 @@ void write_master_test2(void)
     inf_0.subtitles = "group-three";
     inf_0.closed_captions = "cc";
     inf_0.uri = "http://www.example.com/variant_01.m3u8";
-    master.stream_infs.data = &inf_0;
+    multivariant.stream_infs.data = &inf_0;
 
     stream_inf_list_t inf_list_1;
     stream_inf_t inf_1;
@@ -215,7 +215,7 @@ void write_master_test2(void)
     inf_1.uri = "http://www.example.com/variant_02.m3u8";
     inf_list_1.data = &inf_1;
     inf_list_1.next = NULL;
-    master.stream_infs.next = &inf_list_1;
+    multivariant.stream_infs.next = &inf_list_1;
 
     iframe_stream_inf_t ifinf_0;
     hlsparse_iframe_stream_inf_init(&ifinf_0);
@@ -227,15 +227,15 @@ void write_master_test2(void)
     ifinf_0.hdcp_level = HDCP_LEVEL_NONE;
     ifinf_0.video = "group-two";
     ifinf_0.uri = "http://www.example.com/iframe_variant_01.m3u8";
-    master.iframe_stream_infs.data = &ifinf_0;
+    multivariant.iframe_stream_infs.data = &ifinf_0;
 
     session_data_t sess;
     sess.data_id = "com.example.move.trailer";
     sess.value = "this shouldn't be here if 'uri' is present";
     sess.uri = "http://www.example.com/session_info.json";
     sess.language = "en-US";
-    master.session_data.data = &sess;
-    master.session_data.next = NULL;
+    multivariant.session_data.data = &sess;
+    multivariant.session_data.next = NULL;
 
     hls_key_t key;
     key.method = KEY_METHOD_AES128;
@@ -243,15 +243,15 @@ void write_master_test2(void)
     key.uri = "http://www.example.com/keys/01.key";
     key.key_format = "identity";
     key.key_format_versions = "1/2/3";
-    master.session_keys.data = &key;
-    master.session_keys.next = NULL;
+    multivariant.session_keys.data = &key;
+    multivariant.session_keys.next = NULL;
 
     char *out = NULL;
     int size = 0;
 
-    HLSCode res = hlswrite_master(&out, &size, &master);
+    HLSCode res = hlswrite_multivariant_playlist(&out, &size, &multivariant);
 
-    const char *master_output = 
+    const char *multivariant_output = 
 "#EXTM3U\n\
 #EXT-X-VERSION:12\n\
 #EXT-X-DEFINE:NAME=\"var1\",VALUE=\"val1\"\n\
@@ -268,13 +268,13 @@ http://www.example.com/variant_02.m3u8\n\
 #EXT-X-SESSION-DATA:DATA-ID=\"com.example.move.trailer\",VALUE=\"this shouldn\'t be here if \'uri\' is present\",URI=\"http://www.example.com/session_info.json\",LANGUAGE=\"en-US\"\n\
 #EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"http://www.example.com/keys/01.key\",IV=0x0102030405060708090A0B0C0D0E0F10,KEYFORMAT=\"identity\",KEYFORMATVERSIONS=\"1/2/3\"\n";
     
-    int len = strlen(master_output);
+    int len = strlen(multivariant_output);
     for(int i=0; i<len; ++i) {
-        if(master_output[i] != out[i]) {
+        if(multivariant_output[i] != out[i]) {
             break;
         }
     }
-    int test_result = strcmp(master_output, out);
+    int test_result = strcmp(multivariant_output, out);
     CU_ASSERT_EQUAL(test_result, 0);
 }
 
@@ -679,8 +679,8 @@ void setup()
     hlsparse_global_init();
     
     suite("parse", init, clean);
-    test("write_master", write_master_test);
-    test("write_master2", write_master_test2);
+    test("write_multivariant", write_multivariant_test);
+    test("write_multivariant2", write_multivariant_test2);
     test("write_media", write_media_test);
     test("write_media2", write_media_test2);
     test("write_media3", write_media_test3);

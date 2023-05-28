@@ -43,7 +43,7 @@ int parse_str_to_float(const char *str, float *dest, size_t size);
 int parse_date(const char *src, uint64_t *dest, size_t size);
 int parse_attrib_str(const char *src, char **dest, size_t size);
 int parse_attrib_data(const char *src, char **dest, size_t size);
-int parse_master_tag(const char *src, size_t size, master_t *dest); 
+int parse_multivariant_playlist_tag(const char *src, size_t size, multivariant_playlist_t *dest); 
 int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *dest);
 void hlsparse_byte_range_init(byte_range_t *byte_range);
 void hlsparse_ext_inf_init(ext_inf_t *ext_inf);

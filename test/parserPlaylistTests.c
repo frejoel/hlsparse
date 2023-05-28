@@ -9,46 +9,46 @@
 
 void playlist_init_test(void)
 {
-    master_t master;
-    HLSCode res = hlsparse_master_init(&master);
+    multivariant_playlist_t multivariant;
+    HLSCode res = hlsparse_multivariant_playlist_init(&multivariant);
     CU_ASSERT_EQUAL(res, HLS_OK);
-    CU_ASSERT_EQUAL(master.version, 0);
-    CU_ASSERT_EQUAL(master.uri, 0); 
-    CU_ASSERT_EQUAL(master.m3u, HLS_FALSE); 
-    CU_ASSERT_EQUAL(master.independent_segments, HLS_FALSE); 
-    CU_ASSERT_EQUAL(master.start.time_offset, 0.f); 
-    CU_ASSERT_EQUAL(master.start.precise, HLS_FALSE); 
-    CU_ASSERT_EQUAL(master.session_data.data, NULL); 
-    CU_ASSERT_EQUAL(master.session_data.next, NULL); 
-    CU_ASSERT_EQUAL(master.media.data, NULL); 
-    CU_ASSERT_EQUAL(master.media.next, NULL); 
-    CU_ASSERT_EQUAL(master.stream_infs.data, NULL); 
-    CU_ASSERT_EQUAL(master.stream_infs.next, NULL); 
-    CU_ASSERT_EQUAL(master.iframe_stream_infs.data, NULL); 
-    CU_ASSERT_EQUAL(master.iframe_stream_infs.next, NULL); 
-    CU_ASSERT_EQUAL(master.custom_tags.data, NULL); 
-    CU_ASSERT_EQUAL(master.custom_tags.next, NULL); 
+    CU_ASSERT_EQUAL(multivariant.version, 0);
+    CU_ASSERT_EQUAL(multivariant.uri, 0); 
+    CU_ASSERT_EQUAL(multivariant.m3u, HLS_FALSE); 
+    CU_ASSERT_EQUAL(multivariant.independent_segments, HLS_FALSE); 
+    CU_ASSERT_EQUAL(multivariant.start.time_offset, 0.f); 
+    CU_ASSERT_EQUAL(multivariant.start.precise, HLS_FALSE); 
+    CU_ASSERT_EQUAL(multivariant.session_data.data, NULL); 
+    CU_ASSERT_EQUAL(multivariant.session_data.next, NULL); 
+    CU_ASSERT_EQUAL(multivariant.media.data, NULL); 
+    CU_ASSERT_EQUAL(multivariant.media.next, NULL); 
+    CU_ASSERT_EQUAL(multivariant.stream_infs.data, NULL); 
+    CU_ASSERT_EQUAL(multivariant.stream_infs.next, NULL); 
+    CU_ASSERT_EQUAL(multivariant.iframe_stream_infs.data, NULL); 
+    CU_ASSERT_EQUAL(multivariant.iframe_stream_infs.next, NULL); 
+    CU_ASSERT_EQUAL(multivariant.custom_tags.data, NULL); 
+    CU_ASSERT_EQUAL(multivariant.custom_tags.next, NULL); 
     
-    hlsparse_master_init(NULL);
+    hlsparse_multivariant_playlist_init(NULL);
 }
 
 void playlist_term_test(void)
 {
-    master_t master;
-    HLSCode res = hlsparse_master_init(&master);
+    multivariant_playlist_t multivariant;
+    HLSCode res = hlsparse_multivariant_playlist_init(&multivariant);
     CU_ASSERT_EQUAL(res, HLS_OK);
 
-    res = hlsparse_master_term(&master);
+    res = hlsparse_multivariant_playlist_term(&multivariant);
     CU_ASSERT_EQUAL(res, HLS_OK);
 
-    res = hlsparse_master_term(NULL);
+    res = hlsparse_multivariant_playlist_term(NULL);
     CU_ASSERT_EQUAL(res, HLS_ERROR);
 }
 
 void playlist_parse_test(void)
 {
-    master_t master;
-    hlsparse_master_init(&master);
+    multivariant_playlist_t multivariant;
+    hlsparse_multivariant_playlist_init(&multivariant);
 
     const char *src = "#EXTM3U\n"\
 "#EXT-X-VERSION:7\n"\
@@ -64,37 +64,37 @@ void playlist_parse_test(void)
 "#EXT-X-START:TIME-OFFSET=10.0,PRECISE=YES\n";
 
     size_t size = strlen(src);
-    int res = hlsparse_master(src, size, &master);    
+    int res = hlsparse_multivariant_playlist(src, size, &multivariant);    
     CU_ASSERT_EQUAL(res, size);
-    CU_ASSERT_EQUAL(master.version, 7);
-    CU_ASSERT_NOT_EQUAL(master.media.data, NULL);
-    CU_ASSERT_EQUAL(master.media.next, NULL);
-    CU_ASSERT_NOT_EQUAL(master.stream_infs.data, NULL);
-    CU_ASSERT_NOT_EQUAL(master.stream_infs.next, NULL);
-    CU_ASSERT_NOT_EQUAL(master.iframe_stream_infs.data, NULL);
-    CU_ASSERT_EQUAL(master.iframe_stream_infs.next, NULL);
-    CU_ASSERT_EQUAL(master.custom_tags.data, NULL);
-    CU_ASSERT_EQUAL(master.nb_session_keys, 1);
-    CU_ASSERT_EQUAL(master.session_keys.next, NULL);
-    CU_ASSERT_EQUAL(master.nb_stream_infs, 2);
-    CU_ASSERT_EQUAL(master.nb_iframe_stream_infs, 1);
+    CU_ASSERT_EQUAL(multivariant.version, 7);
+    CU_ASSERT_NOT_EQUAL(multivariant.media.data, NULL);
+    CU_ASSERT_EQUAL(multivariant.media.next, NULL);
+    CU_ASSERT_NOT_EQUAL(multivariant.stream_infs.data, NULL);
+    CU_ASSERT_NOT_EQUAL(multivariant.stream_infs.next, NULL);
+    CU_ASSERT_NOT_EQUAL(multivariant.iframe_stream_infs.data, NULL);
+    CU_ASSERT_EQUAL(multivariant.iframe_stream_infs.next, NULL);
+    CU_ASSERT_EQUAL(multivariant.custom_tags.data, NULL);
+    CU_ASSERT_EQUAL(multivariant.nb_session_keys, 1);
+    CU_ASSERT_EQUAL(multivariant.session_keys.next, NULL);
+    CU_ASSERT_EQUAL(multivariant.nb_stream_infs, 2);
+    CU_ASSERT_EQUAL(multivariant.nb_iframe_stream_infs, 1);
 
-    hls_key_t *key = master.session_keys.data;
+    hls_key_t *key = multivariant.session_keys.data;
     CU_ASSERT_EQUAL(key->method, KEY_METHOD_AES128);
     CU_ASSERT_EQUAL(strcmp(key->uri, "http://www.test.com/key"), 0);
 
-    hlsparse_master_term(&master);
+    hlsparse_multivariant_playlist_term(&multivariant);
     
     // make sure parsing NULL's etc. works
-    res = hlsparse_master(NULL, 0, NULL);
+    res = hlsparse_multivariant_playlist(NULL, 0, NULL);
     CU_ASSERT_EQUAL(res, 0);
     
-    res = hlsparse_master(src, size, NULL);
+    res = hlsparse_multivariant_playlist(src, size, NULL);
     CU_ASSERT_EQUAL(res, size);
 
-    hlsparse_master_init(&master);
-    res = hlsparse_master(NULL, 0, &master);
-    hlsparse_master_term(&master);
+    hlsparse_multivariant_playlist_init(&multivariant);
+    res = hlsparse_multivariant_playlist(NULL, 0, &multivariant);
+    hlsparse_multivariant_playlist_term(&multivariant);
 }
 
 void media_playlist_init_test(void)

@@ -8,14 +8,14 @@
 #include <memory.h>
 
 /**
- * parses an HLS master playlist src into a master_t struct
+ * parses an HLS multivariant playlist src into a multivariant_playlist_t struct
  *
  * @param src The raw HLS src string
  * @param size The length of the HLS src string
  * @param dest The destination to write the properties to. The destiation must
  * already be initialized prior to calling parse.
  */
-int parse_master_tag(const char *src, size_t size, master_t *dest)
+int parse_multivariant_playlist_tag(const char *src, size_t size, multivariant_playlist_t *dest)
 {
     if(!dest) {
         return 0;

@@ -10,19 +10,19 @@ int main() {
         return -1;
     }
 
-    // create a master playlist structure
-    master_t myMaster;
-    res = hlsparse_master_init(&myMaster);
+    // create a multivariant playlist structure
+    multivariant_playlist_t myMultivariant;
+    res = hlsparse_multivariant_playlist_init(&myMultivariant);
     if(res != HLS_OK) {
-        fprintf(stderr, "failed to initialize master playlist structure");
+        fprintf(stderr, "failed to initialize multivariant playlist structure");
         return -1;
     }
 
-    // edit some master playlist vaues
-    myMaster.version = 4;
-    myMaster.independent_segments = HLS_FALSE;
+    // edit some multivariant playlist vaues
+    myMultivariant.version = 4;
+    myMultivariant.independent_segments = HLS_FALSE;
 
-    // add some stream infs to the master
+    // add some stream infs to the multivariant playlist
     stream_inf_t inf[2];
     hlsparse_stream_inf_init(&inf[0]);
     hlsparse_stream_inf_init(&inf[1]);
@@ -41,7 +41,7 @@ int main() {
     inf[0].uri = "http://www.example.com/variant_01.m3u8";
 
     // set the first stream inf data
-    myMaster.stream_infs.data = &inf[0];
+    myMultivariant.stream_infs.data = &inf[0];
 
     // for the 2nd stream inf we'll need to create a list item
     stream_inf_list_t inf_list;
@@ -64,21 +64,21 @@ int main() {
     // indicate this
     inf_list.next = NULL;
     // link the 2nd node on to the first node
-    myMaster.stream_infs.next = &inf_list;
+    myMultivariant.stream_infs.next = &inf_list;
 
     // pointer to store the output of the HLS playlist text
     char *out = NULL;
     // variable telling us how many bytes are being used in the playlist
     int size = 0;
 
-    // generate the HLS text from our master_t
-    res = hlswrite_master(&out, &size, &myMaster);
+    // generate the HLS text from our multivariant_playlist_t
+    res = hlswrite_multivariant_playlist(&out, &size, &myMultivariant);
     if(res != HLS_OK) {
         fprintf(stderr, "failed to write the playlist\n");
         return -1;
     }
 
-    printf("myMaster playlist is %d bytes long\n", size);
+    printf("myMultivariant playlist is %d bytes long\n", size);
     if(size > 0) {
         printf("\n%s\n", out);
     }
