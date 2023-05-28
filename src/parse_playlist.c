@@ -8,6 +8,7 @@
 
 #include "parse.h"
 #include "utils.h"
+#include "mem.h"
 
 /**
  * parses an HLS multivariant playlist src into a multivariant_playlist_t struct
@@ -154,8 +155,8 @@ int parse_multivariant_playlist_tag(const char *src, size_t size, multivariant_p
         hlsparse_key_init(key);
         pt += parse_key(pt, size - (pt - src), key);
 
-        if(key->method != KEY_METHOD_NONE && key->method != KEY_METHOD_INVALID) {
-            path_combine(&key->uri, dest->uri, key->uri);
+        if(dest->uri && key->method != KEY_METHOD_NONE && key->method != KEY_METHOD_INVALID) {
+            path_combine_realloc(&key->uri, dest->uri, key->uri);
         }
 
         key_list_t *next = &dest->session_keys;
@@ -336,6 +337,9 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
         hlsparse_segment_init(segment);
 
         pt += parse_partial_segment(pt, size - (pt - src), segment);
+        if(segment->uri && dest->uri) {
+            path_combine_realloc(&segment->uri, dest->uri, segment->uri);
+        }
 
         segment->bitrate = dest->next_segment_bitrate;
         segment->sequence_num = dest->next_segment_media_sequence;
@@ -416,7 +420,7 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
         pt += parse_key(pt, size - (pt - src), key);
 
         if(key->method != KEY_METHOD_NONE && key->method != KEY_METHOD_INVALID) {
-            path_combine(&key->uri, dest->uri, key->uri);
+            path_combine_realloc(&key->uri, dest->uri, key->uri);
         }
 
         // set the media sequnce that the key originated

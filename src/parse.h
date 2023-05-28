@@ -17,10 +17,6 @@
 extern "C" {
 #endif
 
-// Memory Allocator
-extern hlsparse_malloc_callback hls_malloc;
-extern hlsparse_free_callback hls_free;
-
 // Tag parsing
 int parse_line_to_str(const char *src, char **dest, size_t size);
 int parse_str_to_int(const char *src, int *dest, size_t size);
@@ -37,52 +33,6 @@ int parse_attrib_data(const char *src, char **dest, size_t size);
 int parse_multivariant_playlist_tag(const char *src, size_t size, multivariant_playlist_t *dest); 
 int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *dest);
 
-void hlsparse_byte_range_init(byte_range_t *byte_range);
-void hlsparse_ext_inf_init(ext_inf_t *ext_inf);
-void hlsparse_resolution_init(resolution_t *resolution);
-void hlsparse_iframe_stream_inf_init(iframe_stream_inf_t *stream_inf);
-void hlsparse_stream_inf_init(stream_inf_t *stream_inf);
-void hlsparse_key_init(hls_key_t *key);
-void hlsparse_map_init(map_t *map);
-void hlsparse_daterange_init(daterange_t *daterange);
-void hlsparse_media_init(media_t *media);
-void hlsparse_segment_init(segment_t *segment);
-void hlsparse_session_data_init(session_data_t *session_data);
-void hlsparse_start_init(start_t *start);
-void hlsparse_define_init(define_t *def);
-void hlsparse_segment_list_init(segment_list_t *list);
-void hlsparse_session_data_list_init(session_data_list_t *list);
-void hlsparse_key_list_init(key_list_t *list);
-void hlsparse_stream_inf_list_init(stream_inf_list_t *list);
-void hlsparse_iframe_stream_inf_list_init(iframe_stream_inf_list_t *list);
-void hlsparse_media_list_init(media_list_t *list);
-void hlsparse_map_list_init(map_list_t *list);
-void hlsparse_string_list_init(string_list_t *list);
-void hlsparse_daterange_list_init(daterange_list_t *list);
-void hlsparse_param_list_init(param_list_t *list);
-void hlsparse_define_list_init(define_list_t *list);
-void parse_param_term(char ***params, int size);
-void hlsparse_ext_inf_term(ext_inf_t *ext_inf);
-void hlsparse_iframe_stream_inf_term(iframe_stream_inf_t *stream_inf);
-void hlsparse_stream_inf_term(stream_inf_t *stream_inf);
-void hlsparse_key_term(hls_key_t *key);
-void hlsparse_map_term(map_t *map);
-void hlsparse_daterange_term(daterange_t *daterange);
-void hlsparse_media_term(media_t *media);
-void hlsparse_segment_term(segment_t *segment);
-void hlsparse_session_data_term(session_data_t *session_data);
-void hlsparse_define_term(define_t *def);
-void hlsparse_segment_list_term(segment_list_t *list);
-void hlsparse_session_data_list_term(session_data_list_t *list);
-void parse_key_list_term(key_list_t *list);
-void hlsparse_media_list_term(media_list_t *list);
-void parse_map_list_term(map_list_t *list);
-void hlsparse_daterange_list_term(daterange_list_t *list);
-void hlsparse_iframe_stream_inf_list_term(iframe_stream_inf_list_t *list);
-void hlsparse_stream_inf_list_term(stream_inf_list_t *list);
-void hlsparse_string_list_term(string_list_t *list);
-void hlsparse_param_list_term(param_list_t *list);
-void hlsparse_define_list_term(define_list_t *list);
 int parse_byte_range(const char *src, size_t size, byte_range_t *dest);
 int parse_iframe_stream_inf(const char *src, size_t size, iframe_stream_inf_t *dest);
 int parse_iframe_stream_inf_tag(const char *src, size_t size, iframe_stream_inf_t *dest);

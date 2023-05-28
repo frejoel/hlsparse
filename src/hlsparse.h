@@ -57,11 +57,11 @@
 #define DEFINE_TYPE_IMPORT          2
 #define DEFINE_TYPE_QUERYPARAM      3
 
-#define SEGMENT_TYPE_FULL           0x00
-#define SEGMENT_TYPE_PART           0x01
+#define SEGMENT_TYPE_FULL           0x01
+#define SEGMENT_TYPE_PART           0x02
 #define SEGMENT_TYPE_GAP            0x80 // aka FULL_GAP
-#define SEGMENT_TYPE_FULL_GAP       0x80 // FULL | GAP
-#define SEGMENT_TYPE_PART_GAP       0x81 // PART | GAP 
+#define SEGMENT_TYPE_FULL_GAP       0x81 // FULL | GAP
+#define SEGMENT_TYPE_PART_GAP       0x82 // PART | GAP 
 
 // HLS tags
 #define EXTM3U                      "EXTM3U"

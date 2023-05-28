@@ -8,6 +8,7 @@
 #include "hlsparse.h"
 #include "../src/parse.h"
 #include "../src/utils.h"
+#include "../src/mem.h"
 #include <CUnit/Basic.h>
 
 void byte_range_init_test(void)

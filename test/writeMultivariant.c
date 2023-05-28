@@ -539,9 +539,9 @@ void write_media_test3(void)
     media.end_list = HLS_TRUE;
 
     media.nb_segments = 7;
-    segment_t segs[5];
+    segment_t segs[7];
     hls_key_t keys[3];
-    segment_list_t seg_lists[5];
+    segment_list_t seg_lists[6];
     key_list_t key_lists[2];
     timestamp_t pdt = 1534023759900;
 
@@ -577,67 +577,84 @@ void write_media_test3(void)
 
     segment_list_t *seg_list = &media.segments;
     int i;
+    uint64_t base_timestamp = 1534023759900LL;
     for(i=0; i<media.nb_segments; ++i) {
         segment_t *seg = &segs[i];
         hlsparse_segment_init(seg);
 
-        seg->pdt = pdt;
-
         if(i == 0) {
-            pdt += 0033LL;
+            seg->pdt = base_timestamp;
+            seg->pdt_end = seg->pdt + 0033LL;
             seg->duration = 0.033f;
             seg->key_index = 0;
             seg->custom_tags = tags[0];
             seg->type = SEGMENT_TYPE_FULL;
             seg->bitrate = 0; // not set/invalid
+            seg->uri = strdup("ADAP/00060/1001_ADAP_00001.ts");
         }else if(i == 1){
-            pdt += 4972LL;
+            seg->pdt = base_timestamp + 0033LL;
+            seg->pdt_end = seg->pdt + 4972LL;
             seg->duration = 4.972f;
             seg->key_index = 1;
             seg->custom_tags = tags[1];
             seg->type = SEGMENT_TYPE_FULL;
             seg->bitrate = 1200;
+            seg->uri = strdup("ADAP/00060/1001_ADAP_00002.ts");
         }else if(i == 2){
-            pdt += 5005LL;
+            seg->pdt = base_timestamp + 0033LL + 4972LL;
+            seg->pdt_end = seg->pdt + 5005LL;
             seg->duration = 5.005f;
             seg->key_index = 1;
             seg->type = SEGMENT_TYPE_FULL | SEGMENT_TYPE_GAP;
             seg->bitrate = 1200;
+            seg->uri = strdup("ADAP/00060/1001_ADAP_00003.ts");
         }else if(i == 3){
+            seg->pdt = base_timestamp + 0033LL + 4972LL + 5005LL;
+            seg->pdt_end = seg->pdt + 2605LL;
             seg->duration = 2.605f;
             seg->key_index = 1;
             seg->type = SEGMENT_TYPE_PART;
+            seg->independent = HLS_TRUE;
             seg->bitrate = 1600;
+            seg->byte_range.n = 32;
+            seg->byte_range.o = 0;
+            seg->uri = strdup("ADAP/00060/1001_ADAP_00004-0.ts");
         }else if(i == 4){
+            seg->pdt = base_timestamp + 0033LL + 4972LL + 5005LL + 2605LL;
+            seg->pdt_end = seg->pdt + 2000LL;
             seg->duration = 2.000f;
             seg->key_index = 1;
             seg->type = SEGMENT_TYPE_PART | SEGMENT_TYPE_GAP;
+            seg->independent = HLS_FALSE;
             seg->bitrate = 1600;
+            seg->byte_range.n = 32;
+            seg->byte_range.o = 64;
+            seg->uri = strdup("ADAP/00060/1001_ADAP_00004-1.ts");
         }else if(i == 5){
-            pdt += 4605LL;
+            seg->pdt = base_timestamp + 0033LL + 4972LL + 5005LL + 2605LL + 2000LL;
+            seg->pdt_end = seg->pdt + 4605LL;
             seg->duration = 4.605f;
             seg->key_index = 1;
             seg->type = SEGMENT_TYPE_FULL;
             seg->bitrate = 1600;
+            seg->uri = strdup("ADAP/00060/1001_ADAP_00004.ts");
         }else if(i == 6){
+            // this segment isn't a real segment, it's here for custom tags only
+            // the pdt does not include the partial segment durations
+            seg->pdt = base_timestamp + 0033LL + 4972LL + 5005LL;
+            seg->pdt_end = seg->pdt;
             seg->key_index = 2;
             seg->custom_tags = tags[3];
             seg->type = SEGMENT_TYPE_FULL;
             seg->bitrate = 1600;
+            seg->uri = NULL;
         }
 
-        // note that the last segment URL is not specified, as we only want the custom tags
-        // to get written
-        if(i < 4) {
-            char uri[50];
-            snprintf(uri, 50, "ADAP/00060/1001_ADAP_0000%d.ts", i+1);
-            seg->uri = strdup(uri);
-        }
-
-        pdt += (timestamp_t)seg->duration;
         seg_list->data = seg;
-        if(i < 5) {
-            seg_list->next = &seg_lists[i];
+        if(i < 6) {
+            segment_list_t* next_seg_list = &seg_lists[i];
+            hlsparse_segment_list_init(next_seg_list);
+            seg_list->next = next_seg_list;
             seg_list = seg_list->next;
         }
     }
@@ -669,8 +686,8 @@ ADAP/00060/1001_ADAP_00002.ts\n\
 #EXTINF:5.005,\n\
 ADAP/00060/1001_ADAP_00003.ts\n\
 #EXT-X-BITRATE:1600\n\
-#EXT-X-PART:DURATION=2.605,INDEPENDENT=YES,BYTERANGE=\"32\",GAP=NO,URI=\"ADAP/00060/1001_ADAP_00004-0.ts\"\n\
-#EXT-X-PART:DURATION=2.000,INDEPENDENT=NO,BYTERANGE=\"32@32\",GAP=YES,URI=\"ADAP/00060/1001_ADAP_00004-1.ts\"\n\
+#EXT-X-PART:DURATION=2.605,INDEPENDENT=YES,BYTERANGE=\"32\",URI=\"ADAP/00060/1001_ADAP_00004-0.ts\"\n\
+#EXT-X-PART:DURATION=2.000,BYTERANGE=\"32@64\",GAP=YES,URI=\"ADAP/00060/1001_ADAP_00004-1.ts\"\n\
 #EXTINF:4.605,\n\
 ADAP/00060/1001_ADAP_00004.ts\n\
 #EXT-X-CUE-OUT:_fw_params=\"abc=a&efg=POSTROLL&pop=4\"\n\

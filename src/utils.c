@@ -5,8 +5,10 @@
  */
 
 #include <string.h>
+
 #include "parse.h"
 #include "utils.h"
+#include "mem.h"
 
 char *str_utils_dup(const char *str)
 {

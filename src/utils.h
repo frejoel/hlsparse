@@ -18,6 +18,7 @@ char *str_utils_njoin(const char *str, const char *join, size_t size);
 string_list_t* str_utils_list_dup(const string_list_t* list);
 
 char *path_combine(char **dest, const char *base, const char *path);
+char *path_combine_realloc(char **dest, const char *base, const char *path);
 void add_segment_to_playlist(media_playlist_t *dest, segment_t *segment);
 
 #endif // _UTILS_H

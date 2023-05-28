@@ -5,7 +5,9 @@
  */
 
 #include <string.h>
+
 #include "utils.h"
+#include "mem.h"
 
 /**
  * Combines two URI's as specified in RFC3986.
@@ -48,10 +50,6 @@
 
 char *path_combine(char **dest, const char *base, const char *path)
 {
-    if(!base) {
-        return dest ? *dest : NULL;
-    }
-
     char *out_dest = dest ? *dest : NULL;
 
     if(base && base[0] != '\0') {
@@ -163,4 +161,18 @@ char *path_combine(char **dest, const char *base, const char *path)
 
     return out_dest;
 }
+
+/**
+ * Combines a path using path_combine reallocating the memory used by dest
+ */
+char *path_combine_realloc(char **dest, const char *base, const char *path) {
+    char* tmp = NULL;
+    char* res = path_combine(&tmp, base, path);
+    if(dest) {
+        hls_free(*dest);
+        *dest = tmp;
+    }
+    return res;
+}
+
 

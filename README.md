@@ -23,6 +23,9 @@ For a more thorough example see `examples/example.c` in the source code.
 ```
 
 ## Notes
+### EXT-X-PROGRAM-DATE-TIME
+The `PROGRAM-DATE-TIME` is represented by the first segments timestamp `pdt` in the media playlist.
+
 ### EXT-X-GAP
 Gaps are identified by the segment type.
 ```

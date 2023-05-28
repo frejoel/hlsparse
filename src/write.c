@@ -7,9 +7,11 @@
 #include <stdio.h>
 #include <memory.h>
 #include <time.h>
+
 #include "hlsparse.h"
 #include "write.h"
 #include "parse.h"
+#include "mem.h"
 
 #define PAGE_SIZE   (4096) // 4KB Page size
 
@@ -295,90 +297,117 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
     int key_idx = -1; // -1 == no key
     int bitrate = 0; // invalid bitrate (won't write tag)
     segment_list_t *seg = &playlist->segments;
+    segment_t* prev_seg = NULL;
 
     for(i=0; i<playlist->nb_segments; ++i)
     {
-        // write custom tags first even if the segment uri isn't available
-        // because we could have custom tags indicating actions here e.g. ad post-roll injection
-        string_list_t *ctags = &seg->data->custom_tags;
-        while(ctags && ctags->data) {
-            ADD_TAG(ctags->data);
-            ctags = ctags->next;
+        // if the previous segment was a partial segment, we don't need
+        // to rewrite all the tags
+        if (!prev_seg || (prev_seg->type & SEGMENT_TYPE_PART) == 0) {
+
+            // write custom tags first even if the segment uri isn't available
+            // because we could have custom tags indicating actions here e.g. ad post-roll injection
+            string_list_t *ctags = &seg->data->custom_tags;
+            while(ctags && ctags->data) {
+                ADD_TAG(ctags->data);
+                ctags = ctags->next;
+            }
+
+            // only write the other tags if the uri exists
+            if(seg->data->uri) {
+                // new Key index?
+                if(seg->data->key_index > key_idx) {
+                    key_idx = seg->data->key_index;
+                    // find the key
+                    int j=0;
+                    key_list_t *key_list = &playlist->keys;
+                    hls_key_t *key = NULL;  
+                    while(key_list && key_list->data && j++ <= key_idx) {
+                        key = key_list->data;
+                        key_list = key_list->next;
+                    }
+
+                    // add key tag
+                    if(key) {
+                        switch(key->method) {
+                            case KEY_METHOD_NONE: START_TAG_ENUM(EXTXKEY, METHOD, NONE); break;
+                            case KEY_METHOD_AES128: START_TAG_ENUM(EXTXKEY, METHOD, AES128); break;
+                            case KEY_METHOD_SAMPLEAES: START_TAG_ENUM(EXTXKEY, METHOD, SAMPLEAES); break;
+                        }
+                        if(playlist->uri) {
+                            const char *uri = find_relative_path(key->uri, playlist->uri);
+                            ADD_PARAM_STR_OPTL(URI, uri);
+                        }else{
+                            ADD_PARAM_STR_OPTL(URI, key->uri);
+                        }
+                        ADD_PARAM_HEX_OPTL(KEY_IV, key->iv, 16);
+                        ADD_PARAM_STR_OPTL(KEYFORMAT, key->key_format);
+                        ADD_PARAM_STR_OPTL(KEYFORMATVERSIONS, key->key_format_versions);
+                        END_TAG();
+                    }
+                }
+
+                // if a bitrate is set to zero after a valid bitrate, we need to set back to zero
+                // even though it's probably incorrect
+                if((seg->data->bitrate > 0 || bitrate > 0) && seg->data->bitrate != bitrate) {
+                    ADD_TAG_INT(EXTXBITRATE, seg->data->bitrate);
+                    bitrate = seg->data->bitrate;
+                }
+
+                if(seg->data->discontinuity == HLS_TRUE) {
+                    ADD_TAG(EXTXDISCONTINUITY);
+                    char buf[30];
+                    timestamp_to_iso_date(seg->data->pdt, buf, 30);
+                    ADD_TAG_ENUM(EXTXPROGRAMDATETIME, buf);
+                }
+            }
         }
 
-        // only write the other tags if the uri exists
         if(seg->data->uri) {
-            
-            // new Key index?
-            if(seg->data->key_index > key_idx) {
-                key_idx = seg->data->key_index;
-                // find the key
-                int j=0;
-                key_list_t *key_list = &playlist->keys;
-                hls_key_t *key = NULL;  
-                while(key_list && key_list->data && j++ <= key_idx) {
-                    key = key_list->data;
-                    key_list = key_list->next;
+            if((seg->data->type & SEGMENT_TYPE_FULL) > 0) {
+                if((seg->data->type & SEGMENT_TYPE_GAP) > 0) {
+                    ADD_TAG(EXTXGAP);
                 }
 
-                // add key tag
-                if(key) {
-                    switch(key->method) {
-                        case KEY_METHOD_NONE: START_TAG_ENUM(EXTXKEY, METHOD, NONE); break;
-                        case KEY_METHOD_AES128: START_TAG_ENUM(EXTXKEY, METHOD, AES128); break;
-                        case KEY_METHOD_SAMPLEAES: START_TAG_ENUM(EXTXKEY, METHOD, SAMPLEAES); break;
-                    }
-                    if(playlist->uri) {
-                        const char *uri = find_relative_path(key->uri, playlist->uri);
-                        ADD_PARAM_STR_OPTL(URI, uri);
+                if(seg->data->byte_range.n > 0) {
+                    if(seg->data->byte_range.o != 0) {
+                        latest = pgprintf(latest, "#%s:%d@%d\n", EXTXBYTERANGE, seg->data->byte_range.n, seg->data->byte_range.o);
                     }else{
-                        ADD_PARAM_STR_OPTL(URI, key->uri);
+                        latest = pgprintf(latest, "#%s:%d\n", EXTXBYTERANGE, seg->data->byte_range.n);
                     }
-                    ADD_PARAM_HEX_OPTL(KEY_IV, key->iv, 16);
-                    ADD_PARAM_STR_OPTL(KEYFORMAT, key->key_format);
-                    ADD_PARAM_STR_OPTL(KEYFORMATVERSIONS, key->key_format_versions);
-                    END_TAG();
                 }
-            }
-
-            // if a bitrate is set to zero after a valid bitrate, we need to set back to zero
-            // even though it's probably incorrect
-            if((seg->data->bitrate > 0 || bitrate > 0) && seg->data->bitrate != bitrate) {
-                ADD_TAG_INT(EXTXBITRATE, seg->data->bitrate);
-                bitrate = seg->data->bitrate;
-            }
-
-            if(seg->data->discontinuity == HLS_TRUE) {
-                ADD_TAG(EXTXDISCONTINUITY);
-                char buf[30];
-                timestamp_to_iso_date(seg->data->pdt, buf, 30);
-                ADD_TAG_ENUM(EXTXPROGRAMDATETIME, buf);
-            }
-
-            if(seg->data->type == (SEGMENT_TYPE_FULL | SEGMENT_TYPE_GAP)) {
-                ADD_TAG(EXTXGAP);
-            }
-
-            if(seg->data->byte_range.n > 0) {
-                if(seg->data->byte_range.o != 0) {
-                    latest = pgprintf(latest, "#%s:%d@%d\n", EXTXBYTERANGE, seg->data->byte_range.n, seg->data->byte_range.o);
-                }else{
-                    latest = pgprintf(latest, "#%s:%d\n", EXTXBYTERANGE, seg->data->byte_range.n);
-                }
-            }
         
-            if(seg->data->title) {
-                latest = pgprintf(latest, "#%s:%.3f,%s\n", EXTINF, seg->data->duration, seg->data->title);
-            }else{
-                latest = pgprintf(latest, "#%s:%.3f,\n", EXTINF, seg->data->duration);
-            }
-            if(playlist->uri) {
-                const char *uri = find_relative_path(seg->data->uri, playlist->uri);
-                ADD_URI(uri);
-            }else{
-                ADD_URI(seg->data->uri);
+                if(seg->data->title) {
+                    latest = pgprintf(latest, "#%s:%.3f,%s\n", EXTINF, seg->data->duration, seg->data->title);
+                }else{
+                    latest = pgprintf(latest, "#%s:%.3f,\n", EXTINF, seg->data->duration);
+                }
+                if(playlist->uri) {
+                    const char *uri = find_relative_path(seg->data->uri, playlist->uri);
+                    ADD_URI(uri);
+                }else{
+                    ADD_URI(seg->data->uri);
+                }
+            }else if((seg->data->type & SEGMENT_TYPE_PART) > 0) {
+                // partial segments get written a little differenlt
+                START_TAG_FLOAT(EXTXPART, DURATION, seg->data->duration);
+                ADD_PARAM_BOOL_YES_ONLY(INDEPENDENT, seg->data->independent);
+                
+                if(seg->data->byte_range.n > 0) {
+                    if(seg->data->byte_range.o != 0) {
+                        latest = pgprintf(latest, ",%s=\"%d@%d\"", BYTERANGE, seg->data->byte_range.n, seg->data->byte_range.o);
+                    }else{
+                        latest = pgprintf(latest, ",%s=\"%d\"", BYTERANGE, seg->data->byte_range.n);
+                    }
+                }
+
+                ADD_PARAM_BOOL_YES_ONLY(GAP, (seg->data->type & SEGMENT_TYPE_GAP) > 0 ? HLS_TRUE : HLS_FALSE);
+                ADD_PARAM_STR(URI, seg->data->uri);
+                END_TAG();
             }
         }
+
+        prev_seg = seg->data;
         seg = seg->next;
     }
 
