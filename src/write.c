@@ -293,6 +293,7 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
 
     int i;
     int key_idx = -1; // -1 == no key
+    int bitrate = 0; // invalid bitrate (won't write tag)
     segment_list_t *seg = &playlist->segments;
 
     for(i=0; i<playlist->nb_segments; ++i)
@@ -338,6 +339,13 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
                     ADD_PARAM_STR_OPTL(KEYFORMATVERSIONS, key->key_format_versions);
                     END_TAG();
                 }
+            }
+
+            // if a bitrate is set to zero after a valid bitrate, we need to set back to zero
+            // even though it's probably incorrect
+            if((seg->data->bitrate > 0 || bitrate > 0) && seg->data->bitrate != bitrate) {
+                ADD_TAG_INT(EXTXBITRATE, seg->data->bitrate);
+                bitrate = seg->data->bitrate;
             }
 
             if(seg->data->discontinuity == HLS_TRUE) {

@@ -588,28 +588,35 @@ void write_media_test3(void)
             seg->key_index = 0;
             seg->custom_tags = tags[0];
             seg->type = SEGMENT_TYPE_FULL;
+            seg->bitrate = 0; // not set/invalid
         }else if(i == 1){
             pdt += 4972LL;
             seg->duration = 4.972f;
             seg->key_index = 1;
             seg->custom_tags = tags[1];
             seg->type = SEGMENT_TYPE_FULL;
+            seg->bitrate = 1200;
         }else if(i == 2){
             pdt += 5005LL;
             seg->duration = 5.005f;
             seg->key_index = 1;
             seg->type = SEGMENT_TYPE_FULL | SEGMENT_TYPE_GAP;
+            seg->bitrate = 1200;
         }else if(i == 3){
             pdt += 4605LL;
             seg->duration = 4.605f;
             seg->key_index = 1;
             seg->type = SEGMENT_TYPE_FULL;
+            seg->bitrate = 1600;
         }else if(i == 4){
             seg->key_index = 2;
             seg->custom_tags = tags[3];
             seg->type = SEGMENT_TYPE_FULL;
+            seg->bitrate = 1600;
         }
 
+        // note that the last segment URL is not specified, as we only want the custom tags
+        // to get written
         if(i < 4) {
             char uri[50];
             snprintf(uri, 50, "ADAP/00060/1001_ADAP_0000%d.ts", i+1);
@@ -644,11 +651,13 @@ ADAP/00060/1001_ADAP_00001.ts\n\
 #EXT-X-CUE-OUT:_params=\"abc=d&efg=MIDROLL&pop=1\"\n\
 #EXT-X-CUE-IN\n\
 #EXT-X-KEY:METHOD=AES-128,URI=\"https://key-service.com/key?id=124\",IV=0xCDEF0123456789ABCDEF0123456789AB\n\
+#EXT-X-BITRATE:1200\n\
 #EXTINF:4.972,\n\
 ADAP/00060/1001_ADAP_00002.ts\n\
 #EXT-X-GAP\n\
 #EXTINF:5.005,\n\
 ADAP/00060/1001_ADAP_00003.ts\n\
+#EXT-X-BITRATE:1600\n\
 #EXTINF:4.605,\n\
 ADAP/00060/1001_ADAP_00004.ts\n\
 #EXT-X-CUE-OUT:_fw_params=\"abc=a&efg=POSTROLL&pop=4\"\n\

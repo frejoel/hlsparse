@@ -294,6 +294,7 @@ typedef struct {
     int key_index;
     int map_index;
     int daterange_index;
+    int bitrate; // kbps
     float duration;
     char *title;
     char *uri;
@@ -425,6 +426,7 @@ typedef struct {
     int                         media_sequence;
     int                         next_segment_media_sequence;
     int                         next_segment_type;
+    int                         next_segment_bitrate;
     int                         nb_segments;
     int                         nb_keys;
     int                         nb_maps;

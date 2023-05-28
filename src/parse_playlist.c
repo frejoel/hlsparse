@@ -289,6 +289,9 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
     } else if(EQUAL(pt, EXTXSTART)) {
         ++pt;
         pt += parse_start(pt, size - (pt - src), &dest->start);
+    } else if(EQUAL(pt, EXTXBITRATE)) {
+        ++pt; // get past the ':'
+        pt += parse_str_to_int(pt, &dest->next_segment_bitrate, size - (pt - src));
     } else if (EQUAL(pt, EXTXBYTERANGE)) {
         if (*pt == ':') {
             ++pt;
@@ -333,6 +336,7 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
         pt += parse_segment(pt, size - (pt - src), segment);
 
         segment->type = dest->next_segment_type;
+        segment->bitrate = dest->next_segment_bitrate;
         segment->sequence_num = dest->next_segment_media_sequence;
         ++(dest->next_segment_media_sequence);
 
