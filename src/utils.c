@@ -6,6 +6,7 @@
 
 #include <string.h>
 #include "parse.h"
+#include "utils.h"
 
 char *str_utils_dup(const char *str)
 {
@@ -108,4 +109,23 @@ void add_segment_to_playlist(media_playlist_t *dest, segment_t *segment)
 
     dest->last_segment = segment;
     ++(dest->nb_segments);
+}
+
+string_list_t* str_utils_list_dup(const string_list_t* list)
+{
+    if(!list) {
+        return NULL;
+    }
+
+    string_list_t* new_list = (string_list_t*) hls_malloc(sizeof(string_list_t));
+    hlsparse_string_list_init(new_list);
+
+    if(list->data) {
+        new_list->data = str_utils_dup(list->data);
+    }
+    if (list->next) {
+        new_list->next = str_utils_list_dup(list->next);
+    }
+    
+    return new_list;
 }

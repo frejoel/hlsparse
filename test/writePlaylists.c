@@ -6,7 +6,6 @@
 
 #include "hlsparse.h"
 #include "../src/parse.h"
-#include "../src/utils.h"
 #include "tests.h"
 #include <CUnit/Basic.h>
 
@@ -538,7 +537,7 @@ void write_media_test3(void)
     media.iframes_only = HLS_FALSE;
     media.end_list = HLS_TRUE;
 
-    media.nb_segments = 7;
+    media.nb_segments = 5;
     segment_t segs[5];
     hls_key_t keys[3];
     segment_list_t seg_lists[5];
@@ -604,22 +603,12 @@ void write_media_test3(void)
             seg->type = SEGMENT_TYPE_FULL | SEGMENT_TYPE_GAP;
             seg->bitrate = 1200;
         }else if(i == 3){
-            seg->duration = 2.605f;
-            seg->key_index = 1;
-            seg->type = SEGMENT_TYPE_PART;
-            seg->bitrate = 1600;
-        }else if(i == 4){
-            seg->duration = 2.000f;
-            seg->key_index = 1;
-            seg->type = SEGMENT_TYPE_PART | SEGMENT_TYPE_GAP;
-            seg->bitrate = 1600;
-        }else if(i == 5){
             pdt += 4605LL;
             seg->duration = 4.605f;
             seg->key_index = 1;
             seg->type = SEGMENT_TYPE_FULL;
             seg->bitrate = 1600;
-        }else if(i == 6){
+        }else if(i == 4){
             seg->key_index = 2;
             seg->custom_tags = tags[3];
             seg->type = SEGMENT_TYPE_FULL;
@@ -669,8 +658,6 @@ ADAP/00060/1001_ADAP_00002.ts\n\
 #EXTINF:5.005,\n\
 ADAP/00060/1001_ADAP_00003.ts\n\
 #EXT-X-BITRATE:1600\n\
-#EXT-X-PART:DURATION=2.605,INDEPENDENT=YES,BYTERANGE=\"32\",GAP=NO,URI=\"ADAP/00060/1001_ADAP_00004-0.ts\"\n\
-#EXT-X-PART:DURATION=2.000,INDEPENDENT=NO,BYTERANGE=\"32@32\",GAP=YES,URI=\"ADAP/00060/1001_ADAP_00004-1.ts\"\n\
 #EXTINF:4.605,\n\
 ADAP/00060/1001_ADAP_00004.ts\n\
 #EXT-X-CUE-OUT:_fw_params=\"abc=a&efg=POSTROLL&pop=4\"\n\

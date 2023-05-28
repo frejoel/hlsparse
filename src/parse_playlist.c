@@ -4,8 +4,10 @@
  * see LICENSE included with package
  */
 
-#include "parse.h"
 #include <memory.h>
+
+#include "parse.h"
+#include "utils.h"
 
 /**
  * parses an HLS multivariant playlist src into a multivariant_playlist_t struct
@@ -358,6 +360,14 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
 
         // add this segment to the playlists duration
         dest->duration += segment->duration;
+
+        // properties from the next full segment apply to this segment too
+        // we won't clear any of these until the full segment is available
+        segment->key_index = dest->nb_keys - 1;
+        segment->map_index = dest->nb_maps - 1;
+        segment->daterange_index = dest->nb_dateranges - 1;
+        segment->custom_tags.data = str_utils_dup(dest->custom_tags.data);
+        segment->custom_tags.next = str_utils_list_dup(dest->custom_tags.next);
 
         add_segment_to_playlist(dest, segment);
 

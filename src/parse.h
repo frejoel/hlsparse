@@ -21,16 +21,6 @@ extern "C" {
 extern hlsparse_malloc_callback hls_malloc;
 extern hlsparse_free_callback hls_free;
 
-// Utils
-char *str_utils_dup(const char *str);
-char *str_utils_ndup(const char *str, size_t size);
-char *str_utils_append(char *str, const char *append);
-char *str_utils_nappend(char *str, const char *append, size_t size);
-char *str_utils_join(const char *str, const char *join);
-char *str_utils_njoin(const char *str, const char *join, size_t size);
-char *path_combine(char **dest, const char *base, const char *path);
-void add_segment_to_playlist(media_playlist_t *dest, segment_t *segment);
-
 // Tag parsing
 int parse_line_to_str(const char *src, char **dest, size_t size);
 int parse_str_to_int(const char *src, int *dest, size_t size);
@@ -46,6 +36,7 @@ int parse_attrib_str(const char *src, char **dest, size_t size);
 int parse_attrib_data(const char *src, char **dest, size_t size);
 int parse_multivariant_playlist_tag(const char *src, size_t size, multivariant_playlist_t *dest); 
 int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *dest);
+
 void hlsparse_byte_range_init(byte_range_t *byte_range);
 void hlsparse_ext_inf_init(ext_inf_t *ext_inf);
 void hlsparse_resolution_init(resolution_t *resolution);

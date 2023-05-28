@@ -5,7 +5,7 @@
  */
 
 #include <string.h>
-#include "parse.h"
+#include "utils.h"
 
 /**
  * Combines two URI's as specified in RFC3986.

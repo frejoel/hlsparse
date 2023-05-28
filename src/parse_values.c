@@ -7,7 +7,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
+
 #include "parse.h"
+#include "utils.h"
 
 /**
  * Copies the next line from \a src into the pointer \a dest

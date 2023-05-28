@@ -6,7 +6,9 @@
 
 #include <memory.h>
 #include <string.h>
+
 #include "parse.h"
+#include "utils.h"
 
 /**
  * Helper function for initializing a byte_range_t object
