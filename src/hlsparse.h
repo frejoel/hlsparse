@@ -133,6 +133,9 @@
 #define SCTE35OUT                   "SCTE35-OUT"
 #define SCTE35IN                    "SCTE35-IN"
 #define CUE                         "CUE"
+#define PRE                         "PRE"
+#define POST                        "POST"
+#define ONCE                        "ONCE"
 #define ENDONNEXT                   "END-ON-NEXT"
 #define TYPE                        "TYPE"
 #define GROUPID                     "GROUP-ID"
@@ -436,6 +439,7 @@ typedef struct {
     int                         next_segment_media_sequence;
     int                         next_segment_type;
     int                         next_segment_bitrate;
+    int                         next_segment_daterange_index;
     int                         nb_segments;
     int                         nb_keys;
     int                         nb_maps;

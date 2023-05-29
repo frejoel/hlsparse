@@ -369,7 +369,9 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
         // we won't clear any of these until the full segment is available
         segment->key_index = dest->nb_keys - 1;
         segment->map_index = dest->nb_maps - 1;
-        segment->daterange_index = dest->nb_dateranges - 1;
+        if(dest->next_segment_daterange_index >= 0) {
+            segment->daterange_index = dest->next_segment_daterange_index;
+        }
         segment->custom_tags.data = str_utils_dup(dest->custom_tags.data);
         segment->custom_tags.next = str_utils_list_dup(dest->custom_tags.next);
 
@@ -487,6 +489,7 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
         };
 
         ++(dest->nb_dateranges);
+        dest->next_segment_daterange_index = dest->nb_dateranges - 1;
 
     } else {
         // custom src

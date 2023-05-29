@@ -423,7 +423,7 @@ void media_playlist_parse_test2(void)
     CU_ASSERT_EQUAL(seg->data->sequence_num, 1);
     CU_ASSERT_EQUAL(seg->data->key_index, 0);
     CU_ASSERT_EQUAL(seg->data->map_index, -1);
-    CU_ASSERT_EQUAL(seg->data->daterange_index, 0);
+    CU_ASSERT_EQUAL(seg->data->daterange_index, -1);
     CU_ASSERT_EQUAL(seg->data->title, NULL);
     CU_ASSERT_EQUAL(seg->data->discontinuity, HLS_FALSE);
     CU_ASSERT_EQUAL(seg->data->pdt_discontinuity, HLS_FALSE);
@@ -441,7 +441,7 @@ void media_playlist_parse_test2(void)
     CU_ASSERT_EQUAL(seg->data->sequence_num, 2);
     CU_ASSERT_EQUAL(seg->data->key_index, 0);
     CU_ASSERT_EQUAL(seg->data->map_index, -1);
-    CU_ASSERT_EQUAL(seg->data->daterange_index, 0);
+    CU_ASSERT_EQUAL(seg->data->daterange_index, -1);
     CU_ASSERT_EQUAL(seg->data->title, NULL);
     CU_ASSERT_EQUAL(seg->data->discontinuity, HLS_FALSE);
     CU_ASSERT_EQUAL(seg->data->pdt_discontinuity, HLS_FALSE);
@@ -459,7 +459,7 @@ void media_playlist_parse_test2(void)
     CU_ASSERT_EQUAL(seg->data->sequence_num, 3);
     CU_ASSERT_EQUAL(seg->data->key_index, 0);
     CU_ASSERT_EQUAL(seg->data->map_index, -1);
-    CU_ASSERT_EQUAL(seg->data->daterange_index, 0);
+    CU_ASSERT_EQUAL(seg->data->daterange_index, -1);
     CU_ASSERT_EQUAL(seg->data->title, NULL);
     CU_ASSERT_EQUAL(seg->data->discontinuity, HLS_FALSE);
     CU_ASSERT_EQUAL(seg->data->pdt_discontinuity, HLS_FALSE);
@@ -477,7 +477,7 @@ void media_playlist_parse_test2(void)
     CU_ASSERT_EQUAL(seg->data->sequence_num, 4);
     CU_ASSERT_EQUAL(seg->data->key_index, 0);
     CU_ASSERT_EQUAL(seg->data->map_index, -1);
-    CU_ASSERT_EQUAL(seg->data->daterange_index, 0);
+    CU_ASSERT_EQUAL(seg->data->daterange_index, -1);
     CU_ASSERT_EQUAL(seg->data->title, NULL);
     CU_ASSERT_EQUAL(seg->data->discontinuity, HLS_FALSE);
     CU_ASSERT_EQUAL(seg->data->pdt_discontinuity, HLS_FALSE);
@@ -495,7 +495,7 @@ void media_playlist_parse_test2(void)
     CU_ASSERT_EQUAL(seg->data->sequence_num, 5);
     CU_ASSERT_EQUAL(seg->data->key_index, 0);
     CU_ASSERT_EQUAL(seg->data->map_index, -1);
-    CU_ASSERT_EQUAL(seg->data->daterange_index, 0);
+    CU_ASSERT_EQUAL(seg->data->daterange_index, -1);
     CU_ASSERT_EQUAL(seg->data->title, NULL);
     CU_ASSERT_EQUAL(seg->data->discontinuity, HLS_FALSE);
     CU_ASSERT_EQUAL(seg->data->pdt_discontinuity, HLS_FALSE);
@@ -531,7 +531,7 @@ void media_playlist_parse_test2(void)
     CU_ASSERT_EQUAL(seg->data->sequence_num, 7);
     CU_ASSERT_EQUAL(seg->data->key_index, 0);
     CU_ASSERT_EQUAL(seg->data->map_index, -1);
-    CU_ASSERT_EQUAL(seg->data->daterange_index, 1);
+    CU_ASSERT_EQUAL(seg->data->daterange_index, -1);
     CU_ASSERT_EQUAL(seg->data->title, NULL);
     CU_ASSERT_EQUAL(seg->data->discontinuity, HLS_FALSE);
     CU_ASSERT_EQUAL(seg->data->pdt_discontinuity, HLS_FALSE);

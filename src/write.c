@@ -39,6 +39,10 @@
     latest = pgprintf(latest, ",%s=\"%s\"", param_name, value);
 #define ADD_PARAM_INT(param_name, value) \
     latest = pgprintf(latest, ",%s=%d", param_name, value);
+#define ADD_PARAM_FLOAT(param_name, value) \
+    latest = pgprintf(latest, ",%s=%.3f", param_name, value);
+#define ADD_PARAM_HEX(param_name, value, count) \
+    latest = pgprintf(latest, ",%s=0x", param_name); int l=0; while(l<count) { latest = pgprintf(latest, "%02X", (uint8_t)value[l]); ++l; }
 #define ADD_PARAM_INT_OPTL(param_name, value) \
     if(value > 0) { latest = pgprintf(latest, ",%s=%d", param_name, value); }
 #define ADD_PARAM_FLOAT_OPTL(param_name, value) \
@@ -352,6 +356,57 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
                 if((seg->data->bitrate > 0 || bitrate > 0) && seg->data->bitrate != bitrate) {
                     ADD_TAG_INT(EXTXBITRATE, seg->data->bitrate);
                     bitrate = seg->data->bitrate;
+                }
+                
+                int dr_idx = seg->data->daterange_index;
+                if(dr_idx >= 0)
+                {
+                    daterange_list_t *dr_list = &playlist->dateranges;
+                    while(dr_idx > 0 && dr_idx < playlist->nb_dateranges) {
+                        dr_list = dr_list->next;
+                        --dr_idx;
+                    }
+                    if (dr_list && dr_list->data) {
+                        // #EXT-X-DATERANGE:ID=\"splice\",DURATION=59.94,SCTE35-IN=0xFF,CUE=\"POST,PRE\"\n
+                        daterange_t* dr = dr_list->data;
+                        START_TAG_STR(EXTXDATERANGE, ID, dr->id ? dr->id : "UNDEFINED");
+                        ADD_PARAM_STR_OPTL(CLASS, dr->klass);
+                        char buffer[30];
+                        timestamp_to_iso_date(dr->start_date, buffer, 50);
+                        ADD_PARAM_STR(STARTDATE, buffer);
+                        // TODO: do this programmatically
+                        switch(dr->cue) {
+                            case (CUE_PRE | CUE_POST | CUE_ONCE): ADD_PARAM_STR(CUE, PRE","POST","ONCE","); break;
+                            case (CUE_PRE | CUE_POST): ADD_PARAM_STR(CUE, PRE","POST); break;
+                            case (CUE_PRE | CUE_ONCE): ADD_PARAM_STR(CUE, PRE","ONCE); break;
+                            case (CUE_POST | CUE_ONCE): ADD_PARAM_STR(CUE, POST","ONCE);
+                            case CUE_PRE: ADD_PARAM_STR(CUE, PRE); break;
+                            case CUE_POST: ADD_PARAM_STR(CUE, POST); break;
+                            case CUE_ONCE: ADD_PARAM_STR(CUE, ONCE); break;
+                        }
+                        if(dr->end_date > dr->start_date) {
+                            timestamp_to_iso_date(dr->end_date, buffer, 50);
+                            ADD_PARAM_STR(ENDDATE, buffer);
+                        }
+                        if(dr->duration >= 0.f) ADD_PARAM_FLOAT(DURATION, dr->duration);
+                        if(dr->planned_duration >= 0.f) ADD_PARAM_FLOAT(PLANNEDDURATION, dr->planned_duration);
+                        param_list_t* client_attrs = &dr->client_attributes;
+                        while(client_attrs && client_attrs->key) {
+                            if(client_attrs->value_type == PARAM_TYPE_STRING) {
+                                ADD_PARAM_STR(client_attrs->key, client_attrs->value.data);
+                            }else if(client_attrs->value_type == PARAM_TYPE_FLOAT) {
+                                ADD_PARAM_FLOAT(client_attrs->key, client_attrs->value.number);
+                            }else if(client_attrs->value_type == PARAM_TYPE_DATA) {
+                                ADD_PARAM_HEX(client_attrs->key, client_attrs->value.data, client_attrs->value_size);
+                            }
+                            client_attrs = client_attrs->next;
+                        }
+                        ADD_PARAM_HEX_OPTL(SCTE35CMD, dr->scte35_cmd, dr->scte35_cmd_size);
+                        ADD_PARAM_HEX_OPTL(SCTE35OUT, dr->scte35_out, dr->scte35_out_size);
+                        ADD_PARAM_HEX_OPTL(SCTE35IN, dr->scte35_in, dr->scte35_in_size);
+                        ADD_PARAM_BOOL_YES_ONLY(ENDONNEXT, dr->end_on_next);
+                        END_TAG();
+                    }
                 }
 
                 if(seg->data->discontinuity == HLS_TRUE) {

@@ -662,7 +662,10 @@ int parse_segment_uri(const char *src, size_t size, media_playlist_t *dest)
 
         segment->key_index = dest->nb_keys - 1;
         segment->map_index = dest->nb_maps - 1;
-        segment->daterange_index = dest->nb_dateranges - 1;
+        if(dest->next_segment_daterange_index >= 0) {
+            segment->daterange_index = dest->next_segment_daterange_index;
+            dest->next_segment_daterange_index = -1;
+        }
 
         segment->custom_tags.data = dest->custom_tags.data;
         segment->custom_tags.next = dest->custom_tags.next;

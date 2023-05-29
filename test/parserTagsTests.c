@@ -158,8 +158,9 @@ void segment_init_test(void)
     CU_ASSERT_EQUAL(segment.pdt_end, 0);
     CU_ASSERT_EQUAL(segment.byte_range.n, 0);
     CU_ASSERT_EQUAL(segment.byte_range.o, 0);
-    CU_ASSERT_EQUAL(segment.key_index, 0);
-    CU_ASSERT_EQUAL(segment.map_index, 0);
+    CU_ASSERT_EQUAL(segment.key_index, -1);
+    CU_ASSERT_EQUAL(segment.map_index, -1);
+    CU_ASSERT_EQUAL(segment.daterange_index, -1);
     CU_ASSERT_EQUAL(segment.custom_tags.data, NULL);
     CU_ASSERT_EQUAL(segment.custom_tags.next, NULL);
 

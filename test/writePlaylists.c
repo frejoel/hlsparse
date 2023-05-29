@@ -574,6 +574,29 @@ void write_media_test3(void)
     tags[4].data = "EXT-X-CUE-IN";
     tags[4].next = NULL;
 
+    daterange_t drange;
+    hlsparse_daterange_init(&drange);
+    media.dateranges.data = &drange;
+    drange.id = "splice";
+    drange.start_date = 1685322349605;
+    drange.end_date = 1685322671376;
+    drange.duration = 59.94f;
+    drange.cue = CUE_PRE | CUE_POST;
+    drange.klass = "my.class";
+    drange.planned_duration = -1.f;
+    char scte_in[2] = { 0x01, 0x02 };
+    drange.scte35_in = scte_in;
+    drange.scte35_in_size = 2;
+    char scte_out[2] = { 0x03, 0x04 };
+    drange.scte35_out = scte_out;
+    drange.scte35_out_size = 2;
+    drange.end_on_next = HLS_TRUE;
+    drange.client_attributes.key = "X-MY-KEY";
+    drange.client_attributes.value.data = (char*)"my_value";
+    drange.client_attributes.value_size = 9;
+    drange.client_attributes.value_type = PARAM_TYPE_STRING;
+    drange.client_attributes.next = NULL;
+
     segment_list_t *seg_list = &media.segments;
     int i;
     for(i=0; i<media.nb_segments; ++i) {
@@ -608,6 +631,7 @@ void write_media_test3(void)
             seg->key_index = 1;
             seg->type = SEGMENT_TYPE_FULL;
             seg->bitrate = 1600;
+            seg->daterange_index = 0;
         }else if(i == 4){
             seg->key_index = 2;
             seg->custom_tags = tags[3];
@@ -658,6 +682,7 @@ ADAP/00060/1001_ADAP_00002.ts\n\
 #EXTINF:5.005,\n\
 ADAP/00060/1001_ADAP_00003.ts\n\
 #EXT-X-BITRATE:1600\n\
+#EXT-X-DATERANGE:ID=\"splice\",CLASS=\"my.class\",START-DATE=\"2023-05-29T01:05:49.605Z\",CUE=\"PRE,POST\",END-DATE=\"2023-05-29T01:11:11.376Z\",DURATION=59.940,X-MY-KEY=\"my_value\",SCTE35-OUT=0x0304,SCTE35-IN=0x0102,END-ON-NEXT=YES\n\
 #EXTINF:4.605,\n\
 ADAP/00060/1001_ADAP_00004.ts\n\
 #EXT-X-CUE-OUT:_fw_params=\"abc=a&efg=POSTROLL&pop=4\"\n\
@@ -666,8 +691,7 @@ ADAP/00060/1001_ADAP_00004.ts\n\
 
     int result_len = strlen(media_output);
     for(int ii=0; ii <result_len; ++ii) {
-        if (media_output[ii] != out[ii]) {
-            CU_ASSERT_EQUAL(media_output[ii], out[ii]);
+        if (media_output[ii] != out[ii]) {            CU_ASSERT_EQUAL(media_output[ii], out[ii]);
             break;
         }
     }

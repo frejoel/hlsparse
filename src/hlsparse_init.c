@@ -38,6 +38,7 @@ HLSCode hlsparse_media_playlist_init(media_playlist_t *dest)
     }
     
     memset(dest, 0, sizeof(media_playlist_t));
+    dest->next_segment_daterange_index = -1;
     return HLS_OK;
 }
 
@@ -162,6 +163,9 @@ void hlsparse_segment_init(segment_t *dest)
     if(dest) {
         memset(dest, 0, sizeof(segment_t));
         dest->type = SEGMENT_TYPE_FULL;
+        dest->daterange_index = -1;
+        dest->key_index = -1;
+        dest->map_index = -1;
     }
 }
 
