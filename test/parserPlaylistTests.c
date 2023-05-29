@@ -347,7 +347,7 @@ void media_playlist_parse_test2(void)
 "http://www.example.com/segment4.ts\n"\
 "#EXTINF:10,\n"\
 "http://www.example.com/segment5.ts\n"\
-"#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",DURATION=59.993,SCTE35-IN=0xFC002A0000000000FF00000F056FFFFFF000401162802E6100000000000A0008029896F50000008700000000\n"\
+"#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",DURATION=59.993,SCTE35-IN=0xFC002A0000000000FF00000F056FFFFFF000401162802E6100000000000A0008029896F50000008700000000,CUE=\"PRE,ONCE\"\n"\
 "#EXTINF:10,\n"\
 "http://www.example.com/segment6.ts\n"\
 "#EXTINF:10,\n"\
@@ -382,6 +382,7 @@ void media_playlist_parse_test2(void)
     CU_ASSERT_EQUAL(drange->scte35_cmd_size, 0);
     CU_ASSERT_EQUAL(drange->klass, NULL);
     CU_ASSERT_EQUAL(drange->client_attributes.value_type, PARAM_TYPE_NONE);
+    CU_ASSERT_EQUAL(drange->cue, 0);
 
     drange = playlist.dateranges.next->data;
     CU_ASSERT_EQUAL(drange->pdt, 1266552060000);
@@ -396,6 +397,7 @@ void media_playlist_parse_test2(void)
     CU_ASSERT_EQUAL(drange->scte35_cmd_size, 0);
     CU_ASSERT_EQUAL(drange->klass, NULL);
     CU_ASSERT_EQUAL(drange->client_attributes.value_type, PARAM_TYPE_NONE);
+    CU_ASSERT_EQUAL(drange->cue, CUE_PRE | CUE_ONCE);
 
     segment_list_t *seg = &playlist.segments;
     CU_ASSERT_NOT_EQUAL(seg->data, NULL);

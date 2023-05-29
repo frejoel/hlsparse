@@ -131,3 +131,25 @@ string_list_t* str_utils_list_dup(const string_list_t* list)
     
     return new_list;
 }
+
+int str_utils_index_of(const char *str, const char *value)
+{
+    if(!str || !value) {
+        return -1;
+    }
+
+    int str_len = strlen(str);
+    int val_len = strlen(value);
+    
+    for(int i=0; i<str_len - val_len + 1; ++i) {
+        int ii = 0;
+        for(; ii<val_len; ++ii) {
+            if(str[i + ii] != value[ii]) break;
+        }
+        if(ii == val_len) {
+            return i;
+        }
+    }
+
+    return -1;
+}

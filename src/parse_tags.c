@@ -405,6 +405,15 @@ int parse_daterange_tag(const char *src, size_t size, daterange_t *dest)
         dest->scte35_in_size = parse_attrib_data(pt, &dest->scte35_in, size - (pt - src));
         pt += dest->scte35_in_size;
         dest->scte35_in_size = (dest->scte35_in_size - 2) / 2; // minus '0x' / 2 characters per byte e.g. 'AA'
+    } else if(EQUAL(pt, CUE)) {
+        ++pt; // get past the '=' sign
+        char* enums_str = NULL;
+        pt += parse_attrib_str(pt, &enums_str, size - (pt - src));
+        dest->cue = 0;
+        if(str_utils_index_of(enums_str, "PRE") >= 0) dest->cue |= CUE_PRE;
+        if(str_utils_index_of(enums_str, "POST") >= 0) dest->cue |= CUE_POST;
+        if(str_utils_index_of(enums_str, "ONCE") >= 0) dest->cue |= CUE_ONCE;
+        hls_free(enums_str);
     } else if(EQUAL(pt, ENDONNEXT)) {
         ++pt; // get past the '=' sign
         if(EQUAL(pt, YES)) {

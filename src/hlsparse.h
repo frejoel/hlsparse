@@ -63,6 +63,10 @@
 #define SEGMENT_TYPE_FULL_GAP       0x81 // FULL | GAP
 #define SEGMENT_TYPE_PART_GAP       0x82 // PART | GAP 
 
+#define CUE_PRE                     0x01
+#define CUE_POST                    0x02
+#define CUE_ONCE                    0x04
+
 // HLS tags
 #define EXTM3U                      "EXTM3U"
 #define EXTXVERSION                 "EXT-X-VERSION"
@@ -92,9 +96,9 @@
 #define EXTXPARTINF                 "EXT-X-PART-INF"
 #define EXTXGAP                     "EXT-X-GAP"
 #define EXTXBITRATE                 "EXT-X-BITRATE"
+#define EXTXPART                    "EXT-X-PART"
 // TODO
 #define EXTXSERVERCONTROL           "EXT-X-SERVER-CONTROL"
-#define EXTXPART                    "EXT-X-PART"
 #define EXTXSKIP                    "EXT-X-SKIP"
 #define EXTXPRELOADHINT             "EXT-X-PRELOAD-HINT"
 #define EXTXRENDITIONREPORT         "EXT-X-RENDITION-REPORT"
@@ -128,6 +132,7 @@
 #define SCTE35CMD                   "SCTE35-CMD"
 #define SCTE35OUT                   "SCTE35-OUT"
 #define SCTE35IN                    "SCTE35-IN"
+#define CUE                         "CUE"
 #define ENDONNEXT                   "END-ON-NEXT"
 #define TYPE                        "TYPE"
 #define GROUPID                     "GROUP-ID"
@@ -260,6 +265,7 @@ typedef struct {
     timestamp_t pdt; // timestamp that the EXT-X-DATERANGE appeared in the playlist
     char *id;
     char *klass;
+    int cue; // flags indicating which CUES are used
     timestamp_t start_date;
     timestamp_t end_date;
     float duration;
