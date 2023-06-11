@@ -71,3 +71,6 @@ clean:
 	find . -type f -name '*.o.gcno' -exec rm {} \;
 	find . -type f -name '*.o.gcda' -exec rm {} \;
 	find . -type f -name 'gmon.out' -exec rm {} \;
+
+style:
+	astyle --project src/*.h src/*.c test/*.c test/*.h examples/*.c

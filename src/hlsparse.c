@@ -33,7 +33,7 @@ int hlsparse_media_playlist(const char *src, size_t size, media_playlist_t *dest
 {
     int res = 0;
 
-    if(dest) {
+    if (dest) {
         // reset the duration
         dest->duration = 0;
         // reset the segment byte range
@@ -41,19 +41,19 @@ int hlsparse_media_playlist(const char *src, size_t size, media_playlist_t *dest
     }
 
     // make sure we have some data
-    if(src && (src[0] != '\0') && size > 0) {
+    if (src && (src[0] != '\0') && size > 0) {
         // go through each line parsing the tags
-        const char* pt = &src[0];
-        while(*pt != '\0' && pt < &src[size]) {
-            if(*pt == '#') {
+        const char *pt = &src[0];
+        while (*pt != '\0' && pt < &src[size]) {
+            if (*pt == '#') {
                 ++pt;
                 pt += parse_media_playlist_tag(pt, size - (pt - src), dest);
-            } else if(*pt == '\n' && pt[1] != '#') {
+            } else if (*pt == '\n' && pt[1] != '#') {
                 ++pt;
-                if(dest->last_segment) {
+                if (dest->last_segment) {
                     pt += parse_segment_uri(pt, size - (pt - src), dest);
                 }
-            }else{
+            } else {
                 ++pt;
             }
         }
@@ -64,19 +64,18 @@ int hlsparse_media_playlist(const char *src, size_t size, media_playlist_t *dest
     // custom tags can exist after the last segment for things like pre-roll ad insertion
     // create a zero length segment and attach these custom tags to that segment
     string_list_t *tag_media = &(dest->custom_tags);
-    if(tag_media && tag_media->data)
-    {
+    if (tag_media && tag_media->data) {
         // create a new segment
         segment_t *segment = hls_malloc(sizeof(segment_t));
         hlsparse_segment_init(segment);
 
         // add the new segment to the playlist
         segment_list_t *next = &dest->segments;
-        while(next) {
-            if(!next->data) {
+        while (next) {
+            if (!next->data) {
                 next->data = segment;
                 break;
-            } else if(!next->next) {
+            } else if (!next->next) {
                 next->next = hls_malloc(sizeof(segment_list_t));
                 hlsparse_segment_list_init(next->next);
                 next->next->data = segment;

@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 
-int main() {
+int main()
+{
     // Initialize the library
     HLSCode res = hlsparse_global_init();
-    if(res != HLS_OK) {
+    if (res != HLS_OK) {
         fprintf(stderr, "failed to initialize hlsparse");
         return -1;
     }
@@ -13,7 +14,7 @@ int main() {
     // create a multivariant playlist structure
     multivariant_playlist_t myMultivariant;
     res = hlsparse_multivariant_playlist_init(&myMultivariant);
-    if(res != HLS_OK) {
+    if (res != HLS_OK) {
         fprintf(stderr, "failed to initialize multivariant playlist structure");
         return -1;
     }
@@ -73,13 +74,13 @@ int main() {
 
     // generate the HLS text from our multivariant_playlist_t
     res = hlswrite_multivariant_playlist(&out, &size, &myMultivariant);
-    if(res != HLS_OK) {
+    if (res != HLS_OK) {
         fprintf(stderr, "failed to write the playlist\n");
         return -1;
     }
 
     printf("myMultivariant playlist is %d bytes long\n", size);
-    if(size > 0) {
+    if (size > 0) {
         printf("\n%s\n", out);
     }
 

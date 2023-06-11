@@ -15,7 +15,7 @@ char *str_utils_append(char *str, const char *append);
 char *str_utils_nappend(char *str, const char *append, size_t size);
 char *str_utils_join(const char *str, const char *join);
 char *str_utils_njoin(const char *str, const char *join, size_t size);
-string_list_t* str_utils_list_dup(const string_list_t* list);
+string_list_t *str_utils_list_dup(const string_list_t *list);
 int str_utils_index_of(const char *str, const char *value);
 
 char *path_combine(char **dest, const char *base, const char *path);

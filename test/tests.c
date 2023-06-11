@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Joel Freeman and other contributors
+ * Copyright 2023 Joel Freeman and other contributors
  * Released under the MIT license http://opensource.org/licenses/MIT
  * see LICENSE included with package
  */
@@ -37,10 +37,10 @@ int default_suite_init_clean(void)
 int suite(const char *name, suite_t init, suite_t clean)
 {
 
-    if(!init) {
+    if (!init) {
         init = default_suite_init_clean;
     }
-    if(!clean) {
+    if (!clean) {
         clean = default_suite_init_clean;
     }
 
@@ -75,15 +75,16 @@ int run()
     return nb_tests_failed > 0 ? 1 : 0;
 }
 
-void assert_string_equal(const char *a, const char *b, const char *msg, int line) {
-    if(a != NULL && b != NULL) {
+void assert_string_equal(const char *a, const char *b, const char *msg, int line)
+{
+    if (a != NULL && b != NULL) {
         CU_ASSERT_STRING_EQUAL(a,b);
-    }else {
+    } else {
         char buf[128];
         snprintf(buf, 128, "%s:%d", msg, line);
-        if(a != b) {
+        if (a != b) {
             CU_FAIL(buf);
-        }else{
+        } else {
             CU_PASS(buf);
         }
     }

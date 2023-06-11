@@ -1,0 +1,7 @@
+--style=linux
+--indent=spaces=4
+--lineend=linux
+--pad-header
+--indent-switches
+--align-pointer=name
+--suffix=none

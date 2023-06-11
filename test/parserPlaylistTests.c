@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Joel Freeman and other contributors
+ * Copyright 2023 Joel Freeman and other contributors
  * Released under the MIT license http://opensource.org/licenses/MIT
  * see LICENSE included with package
  */
@@ -13,22 +13,22 @@ void playlist_init_test(void)
     HLSCode res = hlsparse_multivariant_playlist_init(&multivariant);
     CU_ASSERT_EQUAL(res, HLS_OK);
     CU_ASSERT_EQUAL(multivariant.version, 0);
-    CU_ASSERT_EQUAL(multivariant.uri, 0); 
-    CU_ASSERT_EQUAL(multivariant.m3u, HLS_FALSE); 
-    CU_ASSERT_EQUAL(multivariant.independent_segments, HLS_FALSE); 
-    CU_ASSERT_EQUAL(multivariant.start.time_offset, 0.f); 
-    CU_ASSERT_EQUAL(multivariant.start.precise, HLS_FALSE); 
-    CU_ASSERT_EQUAL(multivariant.session_data.data, NULL); 
-    CU_ASSERT_EQUAL(multivariant.session_data.next, NULL); 
-    CU_ASSERT_EQUAL(multivariant.media.data, NULL); 
-    CU_ASSERT_EQUAL(multivariant.media.next, NULL); 
-    CU_ASSERT_EQUAL(multivariant.stream_infs.data, NULL); 
-    CU_ASSERT_EQUAL(multivariant.stream_infs.next, NULL); 
-    CU_ASSERT_EQUAL(multivariant.iframe_stream_infs.data, NULL); 
-    CU_ASSERT_EQUAL(multivariant.iframe_stream_infs.next, NULL); 
-    CU_ASSERT_EQUAL(multivariant.custom_tags.data, NULL); 
-    CU_ASSERT_EQUAL(multivariant.custom_tags.next, NULL); 
-    
+    CU_ASSERT_EQUAL(multivariant.uri, 0);
+    CU_ASSERT_EQUAL(multivariant.m3u, HLS_FALSE);
+    CU_ASSERT_EQUAL(multivariant.independent_segments, HLS_FALSE);
+    CU_ASSERT_EQUAL(multivariant.start.time_offset, 0.f);
+    CU_ASSERT_EQUAL(multivariant.start.precise, HLS_FALSE);
+    CU_ASSERT_EQUAL(multivariant.session_data.data, NULL);
+    CU_ASSERT_EQUAL(multivariant.session_data.next, NULL);
+    CU_ASSERT_EQUAL(multivariant.media.data, NULL);
+    CU_ASSERT_EQUAL(multivariant.media.next, NULL);
+    CU_ASSERT_EQUAL(multivariant.stream_infs.data, NULL);
+    CU_ASSERT_EQUAL(multivariant.stream_infs.next, NULL);
+    CU_ASSERT_EQUAL(multivariant.iframe_stream_infs.data, NULL);
+    CU_ASSERT_EQUAL(multivariant.iframe_stream_infs.next, NULL);
+    CU_ASSERT_EQUAL(multivariant.custom_tags.data, NULL);
+    CU_ASSERT_EQUAL(multivariant.custom_tags.next, NULL);
+
     hlsparse_multivariant_playlist_init(NULL);
 }
 
@@ -51,20 +51,20 @@ void playlist_parse_test(void)
     hlsparse_multivariant_playlist_init(&multivariant);
 
     const char *src = "#EXTM3U\n"\
-"#EXT-X-VERSION:7\n"\
-"#EXT-X-MEDIA:TYPE=VIDEO,URI=\"http://www.test.com\",GROUP-ID=\"groupId\",NAME=\"media\"\n"\
-"#EXT-X-STREAM-INF:BANDWIDTH=900000,CODECS=\"mp4a.40.2,avc1.4d401e\",RESOLUTION=1280x720,HDCP-LEVEL=TYPE-0\n"\
-"/path/to/stream_inf/900.m3u8\n"\
-"#EXT-X-STREAM-INF:BANDWIDTH=1500000,CODECS=\"mp4a.40.2.avc1.4d401e\",RESOLUTION=1920x1080,HDCP-LEVEL=NONE\n"\
-"/path/to/stream_inf/1500.m3u8\n"\
-"#EXT-X-I-FRAME-STREAM-INF:URI=\"http://www.test.com\",BANDWIDTH=900000\n"\
-"#EXT-X-SESSION-DATA:DATA-ID=\"com.example.movie.title\",VALUE=\"value\",URI=\"http://www.test.com/data.json\"\n"\
-"#EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"http://www.test.com/key\""\
-"#EXT-X-INDEPENDENT-SEGMENTS\n"\
-"#EXT-X-START:TIME-OFFSET=10.0,PRECISE=YES\n";
+                      "#EXT-X-VERSION:7\n"\
+                      "#EXT-X-MEDIA:TYPE=VIDEO,URI=\"http://www.test.com\",GROUP-ID=\"groupId\",NAME=\"media\"\n"\
+                      "#EXT-X-STREAM-INF:BANDWIDTH=900000,CODECS=\"mp4a.40.2,avc1.4d401e\",RESOLUTION=1280x720,HDCP-LEVEL=TYPE-0\n"\
+                      "/path/to/stream_inf/900.m3u8\n"\
+                      "#EXT-X-STREAM-INF:BANDWIDTH=1500000,CODECS=\"mp4a.40.2.avc1.4d401e\",RESOLUTION=1920x1080,HDCP-LEVEL=NONE\n"\
+                      "/path/to/stream_inf/1500.m3u8\n"\
+                      "#EXT-X-I-FRAME-STREAM-INF:URI=\"http://www.test.com\",BANDWIDTH=900000\n"\
+                      "#EXT-X-SESSION-DATA:DATA-ID=\"com.example.movie.title\",VALUE=\"value\",URI=\"http://www.test.com/data.json\"\n"\
+                      "#EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"http://www.test.com/key\""\
+                      "#EXT-X-INDEPENDENT-SEGMENTS\n"\
+                      "#EXT-X-START:TIME-OFFSET=10.0,PRECISE=YES\n";
 
     size_t size = strlen(src);
-    int res = hlsparse_multivariant_playlist(src, size, &multivariant);    
+    int res = hlsparse_multivariant_playlist(src, size, &multivariant);
     CU_ASSERT_EQUAL(res, size);
     CU_ASSERT_EQUAL(multivariant.version, 7);
     CU_ASSERT_NOT_EQUAL(multivariant.media.data, NULL);
@@ -84,11 +84,11 @@ void playlist_parse_test(void)
     CU_ASSERT_EQUAL(strcmp(key->uri, "http://www.test.com/key"), 0);
 
     hlsparse_multivariant_playlist_term(&multivariant);
-    
+
     // make sure parsing NULL's etc. works
     res = hlsparse_multivariant_playlist(NULL, 0, NULL);
     CU_ASSERT_EQUAL(res, 0);
-    
+
     res = hlsparse_multivariant_playlist(src, size, NULL);
     CU_ASSERT_EQUAL(res, size);
 
@@ -135,7 +135,7 @@ void media_playlist_init_test(void)
     CU_ASSERT_EQUAL(playlist.custom_tags.data, NULL);
     CU_ASSERT_EQUAL(playlist.custom_tags.next, NULL);
     CU_ASSERT_EQUAL(playlist.last_segment, NULL);
-    
+
     res = hlsparse_media_playlist_init(NULL);
     CU_ASSERT_EQUAL(res, HLS_ERROR);
 }
@@ -145,7 +145,7 @@ void media_playlist_term_test(void)
     media_playlist_t playlist;
     HLSCode res = hlsparse_media_playlist_init(&playlist);
     CU_ASSERT_EQUAL(res, HLS_OK);
-    
+
     res = hlsparse_media_playlist_term(&playlist);
     CU_ASSERT_EQUAL(res, HLS_OK);
     res = hlsparse_media_playlist_term(NULL);
@@ -158,34 +158,34 @@ void media_playlist_parse_test(void)
     hlsparse_media_playlist_init(&playlist);
 
     const char *src = "#EXTM3U\n"\
-"#EXT-X-VERSION:4\n"\
-"#EXT-X-TARGETDURATION:5\n"\
-"#EXT-X-MEDIA-SEQUENCE:34\n"\
-"#EXT-X-DISCONTINUITY-SEQUENCE:2\n"\
-"#EXT-X-PLAYLIST-TYPE:VOD\n"\
-"#EXT-X-INDEPENDENT-SEGMENTS\n"\
-"#EXT-X-I-FRAMES-ONLY\n"\
-"#EXT-X-START:TIME-OFFSET=12.5,PRECISE=YES\n"\
-"#EXT-X-PROGRAM-DATE-TIME:2010-02-19T12:00:00.000+08:00\n"\
-"#EXTINF:6.123,segment0\n"\
-"http://www.example.com/segment0.ts\n"\
-"#EXT-X-BYTERANGE:321\n"\
-"#EXTINF:3.887,\n"\
-"http://www.example.com/segment1.ts\n"\
-"#EXT-X-KEY:METHOD=AES-128,URI=\"http://www.example.com/segment2.key\"\n"\
-"#EXTINF:5,segment2\n"\
-"http://www.example.com/segment2.ts\n"\
-"#EXT-X-BYTERANGE:128@256\n"\
-"#EXTINF:7.80,segment3\n"\
-"http://www.example.com/segment3.ts\n"\
-"#EXT-X-KEY:METHOD=NONE\n"\
-"#EXT-X-PROGRAM-DATE-TIME:2010-02-19T12:01:00.000+08:00\n"\
-"#EXT-X-DISCONTINUITY\n"\
-"#EXTINF:1.2,segment4\n"\
-"http://www.example.com/segment4.ts\n"\
-"#EXTINF:5,segment5\n"\
-"http://www.example.com/segment5.ts\n"\
-"#EXT-X-ENDLIST\n";
+                      "#EXT-X-VERSION:4\n"\
+                      "#EXT-X-TARGETDURATION:5\n"\
+                      "#EXT-X-MEDIA-SEQUENCE:34\n"\
+                      "#EXT-X-DISCONTINUITY-SEQUENCE:2\n"\
+                      "#EXT-X-PLAYLIST-TYPE:VOD\n"\
+                      "#EXT-X-INDEPENDENT-SEGMENTS\n"\
+                      "#EXT-X-I-FRAMES-ONLY\n"\
+                      "#EXT-X-START:TIME-OFFSET=12.5,PRECISE=YES\n"\
+                      "#EXT-X-PROGRAM-DATE-TIME:2010-02-19T12:00:00.000+08:00\n"\
+                      "#EXTINF:6.123,segment0\n"\
+                      "http://www.example.com/segment0.ts\n"\
+                      "#EXT-X-BYTERANGE:321\n"\
+                      "#EXTINF:3.887,\n"\
+                      "http://www.example.com/segment1.ts\n"\
+                      "#EXT-X-KEY:METHOD=AES-128,URI=\"http://www.example.com/segment2.key\"\n"\
+                      "#EXTINF:5,segment2\n"\
+                      "http://www.example.com/segment2.ts\n"\
+                      "#EXT-X-BYTERANGE:128@256\n"\
+                      "#EXTINF:7.80,segment3\n"\
+                      "http://www.example.com/segment3.ts\n"\
+                      "#EXT-X-KEY:METHOD=NONE\n"\
+                      "#EXT-X-PROGRAM-DATE-TIME:2010-02-19T12:01:00.000+08:00\n"\
+                      "#EXT-X-DISCONTINUITY\n"\
+                      "#EXTINF:1.2,segment4\n"\
+                      "http://www.example.com/segment4.ts\n"\
+                      "#EXTINF:5,segment5\n"\
+                      "http://www.example.com/segment5.ts\n"\
+                      "#EXT-X-ENDLIST\n";
 
     int res = hlsparse_media_playlist(src, strlen(src), &playlist);
     CU_ASSERT_EQUAL(res, strlen(src))
@@ -220,7 +220,7 @@ void media_playlist_parse_test(void)
     CU_ASSERT_EQUAL(seg->data->byte_range.o, 0);
     CU_ASSERT_EQUAL(seg->data->custom_tags.data, NULL);
     CU_ASSERT_EQUAL(seg->data->custom_tags.next, NULL);
-    
+
     seg = seg->next;
     CU_ASSERT_NOT_EQUAL(seg, NULL);
     CU_ASSERT_NOT_EQUAL(seg->data, NULL);
@@ -315,7 +315,7 @@ void media_playlist_parse_test(void)
     CU_ASSERT_EQUAL(seg->data->byte_range.o, 0);
     CU_ASSERT_EQUAL(seg->data->custom_tags.data, NULL);
     CU_ASSERT_EQUAL(seg->data->custom_tags.next, NULL);
-    
+
     seg = seg->next;
     CU_ASSERT_EQUAL(seg, NULL);
 
@@ -328,30 +328,30 @@ void media_playlist_parse_test2(void)
     hlsparse_media_playlist_init(&playlist);
 
     const char *src = "#EXTM3U\n"\
-"#EXT-X-VERSION:7\n"\
-"#EXT-X-TARGETDURATION:10\n"\
-"#EXT-X-MEDIA-SEQUENCE:0\n"\
-"#EXT-X-PLAYLIST-TYPE:EVENT\n"\
-"#EXT-X-PROGRAM-DATE-TIME:2010-02-19T12:00:00.000+08:00\n"\
-"#EXT-X-KEY:METHOD=AES-128,URI=\"http://www.example.com/segment2.key\"\n"\
-"#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"2010-02-19T04:00:00Z\",PLANNED-DURATION=59.993,SCTE35-OUT=0xFC002F0000000000FF000014056FFFFFF000E011622DCAFF000052636200000000000A0008029896F50000008700000000\n"\
-"#EXTINF:10,\n"\
-"http://www.example.com/segment0.ts\n"\
-"#EXTINF:10,\n"\
-"http://www.example.com/segment1.ts\n"\
-"#EXTINF:10,\n"\
-"http://www.example.com/segment2.ts\n"\
-"#EXTINF:10,\n"\
-"http://www.example.com/segment3.ts\n"\
-"#EXTINF:10,\n"\
-"http://www.example.com/segment4.ts\n"\
-"#EXTINF:10,\n"\
-"http://www.example.com/segment5.ts\n"\
-"#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",DURATION=59.993,SCTE35-IN=0xFC002A0000000000FF00000F056FFFFFF000401162802E6100000000000A0008029896F50000008700000000,CUE=\"PRE,ONCE\"\n"\
-"#EXTINF:10,\n"\
-"http://www.example.com/segment6.ts\n"\
-"#EXTINF:10,\n"\
-"http://www.example.com/segment7.ts\n";
+                      "#EXT-X-VERSION:7\n"\
+                      "#EXT-X-TARGETDURATION:10\n"\
+                      "#EXT-X-MEDIA-SEQUENCE:0\n"\
+                      "#EXT-X-PLAYLIST-TYPE:EVENT\n"\
+                      "#EXT-X-PROGRAM-DATE-TIME:2010-02-19T12:00:00.000+08:00\n"\
+                      "#EXT-X-KEY:METHOD=AES-128,URI=\"http://www.example.com/segment2.key\"\n"\
+                      "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",START-DATE=\"2010-02-19T04:00:00Z\",PLANNED-DURATION=59.993,SCTE35-OUT=0xFC002F0000000000FF000014056FFFFFF000E011622DCAFF000052636200000000000A0008029896F50000008700000000\n"\
+                      "#EXTINF:10,\n"\
+                      "http://www.example.com/segment0.ts\n"\
+                      "#EXTINF:10,\n"\
+                      "http://www.example.com/segment1.ts\n"\
+                      "#EXTINF:10,\n"\
+                      "http://www.example.com/segment2.ts\n"\
+                      "#EXTINF:10,\n"\
+                      "http://www.example.com/segment3.ts\n"\
+                      "#EXTINF:10,\n"\
+                      "http://www.example.com/segment4.ts\n"\
+                      "#EXTINF:10,\n"\
+                      "http://www.example.com/segment5.ts\n"\
+                      "#EXT-X-DATERANGE:ID=\"splice-6FFFFFF0\",DURATION=59.993,SCTE35-IN=0xFC002A0000000000FF00000F056FFFFFF000401162802E6100000000000A0008029896F50000008700000000,CUE=\"PRE,ONCE\"\n"\
+                      "#EXTINF:10,\n"\
+                      "http://www.example.com/segment6.ts\n"\
+                      "#EXTINF:10,\n"\
+                      "http://www.example.com/segment7.ts\n";
 
     int res = hlsparse_media_playlist(src, strlen(src), &playlist);
     CU_ASSERT_EQUAL(res, strlen(src))
@@ -416,7 +416,7 @@ void media_playlist_parse_test2(void)
     CU_ASSERT_EQUAL(seg->data->byte_range.o, 0);
     CU_ASSERT_EQUAL(seg->data->custom_tags.data, NULL);
     CU_ASSERT_EQUAL(seg->data->custom_tags.next, NULL);
-    
+
     seg = seg->next;
     CU_ASSERT_NOT_EQUAL(seg->data, NULL);
     assert_string_equal(seg->data->uri, "http://www.example.com/segment1.ts", __func__, __LINE__);
@@ -614,7 +614,7 @@ ADAP/00060/1001_ADAP_00004.ts\n\
     CU_ASSERT_NOT_EQUAL(seg->data->custom_tags.data, NULL);
     assert_string_equal(seg->data->custom_tags.data, "EXT-X-ASSET-START:id=987,pop=", __func__, __LINE__);
     CU_ASSERT_EQUAL(seg->data->custom_tags.next, NULL);
-    
+
     seg = seg->next;
     CU_ASSERT_NOT_EQUAL(seg->data, NULL);
     assert_string_equal(seg->data->uri, "ADAP/00060/1001_ADAP_00002.ts", __func__, __LINE__);
@@ -761,7 +761,7 @@ ADAP/00060/1001_ADAP_00003.ts\n\
     CU_ASSERT_EQUAL(playlist.segments.next->data->type, SEGMENT_TYPE_FULL_GAP);
     CU_ASSERT_EQUAL(playlist.segments.next->data->bitrate, 2800);
 
-    segment_t* seg = playlist.segments.next->next->data; 
+    segment_t *seg = playlist.segments.next->next->data;
     CU_ASSERT_EQUAL(seg->type, SEGMENT_TYPE_PART);
     CU_ASSERT_EQUAL(seg->bitrate, 2200);
     CU_ASSERT_DOUBLE_EQUAL(seg->duration, 2.472f, 0.0001f);
@@ -774,8 +774,8 @@ ADAP/00060/1001_ADAP_00003.ts\n\
     CU_ASSERT_EQUAL(seg->duration, 2.5f);
     CU_ASSERT_EQUAL(strcmp(seg->uri, "ADAP/00060/1001_ADAP_00003-1.ts"), 0);
     CU_ASSERT_EQUAL(seg->independent, HLS_FALSE);
-    
-    seg = playlist.segments.next->next->next->next->data; 
+
+    seg = playlist.segments.next->next->next->next->data;
     CU_ASSERT_EQUAL(seg->type, SEGMENT_TYPE_FULL);
     CU_ASSERT_EQUAL(seg->bitrate, 2200);
     CU_ASSERT_EQUAL(seg, playlist.last_segment);

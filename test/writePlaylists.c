@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Joel Freeman and other contributors
+ * Copyright 2023 Joel Freeman and other contributors
  * Released under the MIT license http://opensource.org/licenses/MIT
  * see LICENSE included with package
  */
@@ -103,7 +103,9 @@ void write_multivariant_test(void)
 
     hls_key_t key;
     key.method = KEY_METHOD_AES128;
-    key.iv = (char[]){0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0xE, 0x0F, 0x10};
+    key.iv = (char[]) {
+        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0xE, 0x0F, 0x10
+    };
     key.uri = "http://www.example.com/keys/01.key";
     key.key_format = "identity";
     key.key_format_versions = "1/2/3";
@@ -115,8 +117,8 @@ void write_multivariant_test(void)
 
     HLSCode res = hlswrite_multivariant_playlist(&out, &size, &multivariant);
 
-    const char *multivariant_output = 
-"#EXTM3U\n\
+    const char *multivariant_output =
+        "#EXTM3U\n\
 #EXT-X-VERSION:4\n\
 #EXT-X-INDEPENDENT-SEGMENTS\n\
 #EXT-X-START:TIME-OFFSET=-2.000,PRECISE=NO\n\
@@ -128,7 +130,7 @@ http://www.example.com/variant_02.m3u8\n\
 #EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=800000,AVERAGE-BANDWIDTH=780000,CODECS=\"mp4a.40.2,avc1.4d401e\",RESOLUTION=1280x720,HDCP-LEVEL=NONE,VIDEO=\"group-two\",URI=\"http://www.example.com/iframe_variant_01.m3u8\"\n\
 #EXT-X-SESSION-DATA:DATA-ID=\"com.example.move.trailer\",VALUE=\"this shouldn\'t be here if \'uri\' is present\",URI=\"http://www.example.com/session_info.json\",LANGUAGE=\"en-US\"\n\
 #EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"http://www.example.com/keys/01.key\",IV=0x0102030405060708090A0B0C0D0E0F10,KEYFORMAT=\"identity\",KEYFORMATVERSIONS=\"1/2/3\"\n";
-    
+
     CU_ASSERT_EQUAL(strcmp(multivariant_output, out), 0);
 }
 
@@ -239,7 +241,9 @@ void write_multivariant_test2(void)
 
     hls_key_t key;
     key.method = KEY_METHOD_AES128;
-    key.iv = (char[]){0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0xE, 0x0F, 0x10};
+    key.iv = (char[]) {
+        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0xE, 0x0F, 0x10
+    };
     key.uri = "http://www.example.com/keys/01.key";
     key.key_format = "identity";
     key.key_format_versions = "1/2/3";
@@ -251,8 +255,8 @@ void write_multivariant_test2(void)
 
     HLSCode res = hlswrite_multivariant_playlist(&out, &size, &multivariant);
 
-    const char *multivariant_output = 
-"#EXTM3U\n\
+    const char *multivariant_output =
+        "#EXTM3U\n\
 #EXT-X-VERSION:12\n\
 #EXT-X-DEFINE:NAME=\"var1\",VALUE=\"val1\"\n\
 #EXT-X-DEFINE:IMPORT=\"var2\",VALUE=\"2\"\n\
@@ -267,10 +271,10 @@ http://www.example.com/variant_02.m3u8\n\
 #EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=800000,AVERAGE-BANDWIDTH=780000,CODECS=\"mp4a.40.2,avc1.4d401e\",RESOLUTION=1280x720,HDCP-LEVEL=NONE,VIDEO=\"group-two\",URI=\"http://www.example.com/iframe_variant_01.m3u8\"\n\
 #EXT-X-SESSION-DATA:DATA-ID=\"com.example.move.trailer\",VALUE=\"this shouldn\'t be here if \'uri\' is present\",URI=\"http://www.example.com/session_info.json\",LANGUAGE=\"en-US\"\n\
 #EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"http://www.example.com/keys/01.key\",IV=0x0102030405060708090A0B0C0D0E0F10,KEYFORMAT=\"identity\",KEYFORMATVERSIONS=\"1/2/3\"\n";
-    
+
     int len = strlen(multivariant_output);
-    for(int i=0; i<len; ++i) {
-        if(multivariant_output[i] != out[i]) {
+    for (int i=0; i<len; ++i) {
+        if (multivariant_output[i] != out[i]) {
             break;
         }
     }
@@ -307,33 +311,35 @@ void write_media_test(void)
     key_list_1.data = &keys[1];
     key_list_1.next = NULL;
     keys[0].method = KEY_METHOD_NONE;
-    keys[1].iv = (char[]){0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10};
+    keys[1].iv = (char[]) {
+        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10
+    };
     keys[1].uri = "https://www.example.com/key0.key";
     keys[1].method = KEY_METHOD_AES128;
 
     segment_list_t *seg_list = &media.segments;
     int i;
-    for(i=0; i<media.nb_segments; ++i) {
+    for (i=0; i<media.nb_segments; ++i) {
         segment_t *seg = &segs[i];
         hlsparse_segment_init(seg);
 
-        if(i == 4) {
+        if (i == 4) {
             // modify the 5th segment's PDT and add a DISCONTINUITY
             pdt += 1505LL;
             seg->duration = 8.495f;
             seg->discontinuity = HLS_TRUE;
-        }else if(i == 7){
+        } else if (i == 7) {
             // Add a BYTE Range Request to the 8th Segment
             seg->duration = 10.f;
             seg->byte_range.n = 940;
             seg->byte_range.o = 188;
-        }else{
+        } else {
             seg->duration = 10.f;
         }
 
-        if(i >= 6) {
+        if (i >= 6) {
             seg->key_index = 1;
-        }else{
+        } else {
             seg->key_index = 0;
         }
 
@@ -345,7 +351,7 @@ void write_media_test(void)
         seg->uri = strdup(uri);
         pdt += (timestamp_t)seg->duration;
         seg_list->data = seg;
-        if(i < 10) {
+        if (i < 10) {
             seg_list->next = &seg_lists[i];
             seg_list = seg_list->next;
         }
@@ -357,7 +363,7 @@ void write_media_test(void)
     HLSCode res = hlswrite_media(&out, &size, &media);
 
     const char *media_output =
-"#EXTM3U\n\
+        "#EXTM3U\n\
 #EXT-X-VERSION:4\n\
 #EXT-X-TARGETDURATION:10\n\
 #EXT-X-MEDIA-SEQUENCE:1034\n\
@@ -426,10 +432,14 @@ void write_media_test2(void)
     key_lists[1].data = &keys[2];
     key_lists[1].next = NULL;
     keys[0].method = KEY_METHOD_AES128;
-    keys[0].iv = (char[]){0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89};
+    keys[0].iv = (char[]) {
+        0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89
+    };
     keys[0].uri = "https://key-service.com/key?id=123";
     keys[1].method = KEY_METHOD_AES128;
-    keys[1].iv = (char[]){0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB};
+    keys[1].iv = (char[]) {
+        0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB
+    };
     keys[1].uri = "https://key-service.com/key?id=124";
     keys[2].method = KEY_METHOD_NONE;
 
@@ -447,36 +457,36 @@ void write_media_test2(void)
 
     segment_list_t *seg_list = &media.segments;
     int i;
-    for(i=0; i<media.nb_segments; ++i) {
+    for (i=0; i<media.nb_segments; ++i) {
         segment_t *seg = &segs[i];
         hlsparse_segment_init(seg);
 
         seg->pdt = pdt;
 
-        if(i == 0) {
+        if (i == 0) {
             pdt += 0033LL;
             seg->duration = 0.033f;
             seg->key_index = 0;
             seg->custom_tags = tags[0];
-        }else if(i == 1){
+        } else if (i == 1) {
             pdt += 4972LL;
             seg->duration = 4.972f;
             seg->key_index = 1;
             seg->custom_tags = tags[1];
-        }else if(i == 2){
+        } else if (i == 2) {
             pdt += 5005LL;
             seg->duration = 5.005f;
             seg->key_index = 1;
-        }else if(i == 3){
+        } else if (i == 3) {
             pdt += 4605LL;
             seg->duration = 4.605f;
             seg->key_index = 1;
-        }else if(i == 4){
+        } else if (i == 4) {
             seg->key_index = 2;
             seg->custom_tags = tags[3];
         }
 
-        if(i < 4) {
+        if (i < 4) {
             char uri[50];
             snprintf(uri, 50, "ADAP/00060/1001_ADAP_0000%d.ts", i+1);
             seg->uri = strdup(uri);
@@ -484,7 +494,7 @@ void write_media_test2(void)
 
         pdt += (timestamp_t)seg->duration;
         seg_list->data = seg;
-        if(i < 5) {
+        if (i < 5) {
             seg_list->next = &seg_lists[i];
             seg_list = seg_list->next;
         }
@@ -555,10 +565,14 @@ void write_media_test3(void)
     key_lists[1].data = &keys[2];
     key_lists[1].next = NULL;
     keys[0].method = KEY_METHOD_AES128;
-    keys[0].iv = (char[]){0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89};
+    keys[0].iv = (char[]) {
+        0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89
+    };
     keys[0].uri = "https://key-service.com/key?id=123";
     keys[1].method = KEY_METHOD_AES128;
-    keys[1].iv = (char[]){0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB};
+    keys[1].iv = (char[]) {
+        0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB
+    };
     keys[1].uri = "https://key-service.com/key?id=124";
     keys[2].method = KEY_METHOD_NONE;
 
@@ -592,53 +606,51 @@ void write_media_test3(void)
     drange.scte35_out_size = 2;
     drange.end_on_next = HLS_TRUE;
     drange.client_attributes.key = "X-MY-KEY";
-    drange.client_attributes.value.data = (char*)"my_value";
+    drange.client_attributes.value.data = (char *)"my_value";
     drange.client_attributes.value_size = 9;
     drange.client_attributes.value_type = PARAM_TYPE_STRING;
     drange.client_attributes.next = NULL;
 
     segment_list_t *seg_list = &media.segments;
     int i;
-    for(i=0; i<media.nb_segments; ++i) {
+    for (i=0; i<media.nb_segments; ++i) {
         segment_t *seg = &segs[i];
         hlsparse_segment_init(seg);
 
         seg->pdt = pdt;
 
-        if(i == 0) {
+        if (i == 0) {
             pdt += 0033LL;
             seg->duration = 0.033f;
             seg->key_index = 0;
             seg->custom_tags = tags[0];
             seg->type = SEGMENT_TYPE_FULL;
             seg->bitrate = 0; // not set/invalid
-        }else if(i == 1){
+        } else if (i == 1) {
             pdt += 4972LL;
             seg->duration = 4.972f;
             seg->key_index = 1;
             seg->custom_tags = tags[1];
             seg->type = SEGMENT_TYPE_FULL;
             seg->bitrate = 1200;
-        }else if(i == 2){
+        } else if (i == 2) {
             pdt += 5005LL;
             seg->duration = 5.005f;
             seg->key_index = 1;
             seg->type = SEGMENT_TYPE_FULL | SEGMENT_TYPE_GAP;
             seg->bitrate = 1200;
-        }else if(i == 3){
+        } else if (i == 3) {
             seg->type = SEGMENT_TYPE_SKIP;
             seg->skipped_segments = 3;
             seg->recently_removed_dateranges = NULL;
-        }
-        else if(i == 4){
+        } else if (i == 4) {
             pdt += 4605LL;
             seg->duration = 4.605f;
             seg->key_index = 1;
             seg->type = SEGMENT_TYPE_FULL;
             seg->bitrate = 1600;
             seg->daterange_index = 0;
-        }
-        else if(i == 5){
+        } else if (i == 5) {
             seg->key_index = 2;
             seg->custom_tags = tags[3];
             seg->type = SEGMENT_TYPE_FULL;
@@ -647,7 +659,7 @@ void write_media_test3(void)
 
         // note that the last segment URL is not specified, as we only want the custom tags
         // to get written, and the 3rd segment is a skip segment so it doesn't have a uri
-        if(i < 3 || i == 4) {
+        if (i < 3 || i == 4) {
             char uri[50];
             snprintf(uri, 50, "ADAP/00060/1001_ADAP_0000%d.ts", i+1);
             seg->uri = strdup(uri);
@@ -655,7 +667,7 @@ void write_media_test3(void)
 
         pdt += (timestamp_t)seg->duration;
         seg_list->data = seg;
-        if(i < 5) {
+        if (i < 5) {
             seg_list->next = &seg_lists[i];
             seg_list = seg_list->next;
         }
@@ -697,8 +709,9 @@ ADAP/00060/1001_ADAP_00005.ts\n\
 #EXT-X-ENDLIST\n";
 
     int result_len = strlen(media_output);
-    for(int ii=0; ii <result_len; ++ii) {
-        if (media_output[ii] != out[ii]) {            CU_ASSERT_EQUAL(media_output[ii], out[ii]);
+    for (int ii=0; ii <result_len; ++ii) {
+        if (media_output[ii] != out[ii]) {
+            CU_ASSERT_EQUAL(media_output[ii], out[ii]);
             break;
         }
     }
@@ -708,7 +721,7 @@ ADAP/00060/1001_ADAP_00005.ts\n\
 void setup()
 {
     hlsparse_global_init();
-    
+
     suite("parse", init, clean);
     test("write_multivariant", write_multivariant_test);
     test("write_multivariant2", write_multivariant_test2);

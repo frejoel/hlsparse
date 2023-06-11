@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Joel Freeman and other contributors
+ * Copyright 2023 Joel Freeman and other contributors
  * Released under the MIT license http://opensource.org/licenses/MIT
  * see LICENSE included with package
  */
@@ -13,7 +13,7 @@
 char *str_utils_dup(const char *str)
 {
     char *ret = NULL;
-    if(str) {
+    if (str) {
         size_t len = strlen(str);
         ret = hls_malloc(len + 1);
         strncpy(ret, str, len + 1);
@@ -24,7 +24,7 @@ char *str_utils_dup(const char *str)
 char *str_utils_ndup(const char *str, size_t size)
 {
     char *ret = NULL;
-    if(str) {
+    if (str) {
         ret = hls_malloc(size + 1);
         memcpy(ret, str, size);
         ret[size] = '\0';
@@ -41,15 +41,15 @@ char *str_utils_nappend(char *str, const char *append, size_t append_size)
 {
     char *out = str;
 
-    if(str) {
+    if (str) {
         size_t len = strlen(str);
         size_t full_len = len + append_size;
         out = hls_malloc(full_len + 1);
-        if(out) {
-            if(len) {
+        if (out) {
+            if (len) {
                 memcpy(out, str, len);
             }
-            if(append_size) {
+            if (append_size) {
                 memcpy(&out[len], append, append_size);
             }
             out[full_len] = '\0';
@@ -62,7 +62,7 @@ char *str_utils_nappend(char *str, const char *append, size_t append_size)
 
 char *str_utils_join(const char *str, const char *join)
 {
-    if(!join) {
+    if (!join) {
         return NULL;
     }
 
@@ -73,15 +73,15 @@ char *str_utils_njoin(const char *str, const char *join, size_t size)
 {
     char *out = NULL;
 
-    if(str) {
+    if (str) {
         size_t len = strlen(str);
         size_t full_len = len + size;
         out = hls_malloc(full_len + 1);
-        if(out) {
-            if(len) {
+        if (out) {
+            if (len) {
                 memcpy(out, str, len);
             }
-            if(size) {
+            if (size) {
                 memcpy(&out[len], join, size);
             }
             out[full_len] = '\0';
@@ -96,11 +96,11 @@ void add_segment_to_playlist(media_playlist_t *dest, segment_t *segment)
     // add the segment to the playlist
     segment_list_t *next = &dest->segments;
 
-    while(next) {
-        if(!next->data) {
+    while (next) {
+        if (!next->data) {
             next->data = segment;
             break;
-        } else if(!next->next) {
+        } else if (!next->next) {
             next->next = hls_malloc(sizeof(segment_list_t));
             hlsparse_segment_list_init(next->next);
             next->next->data = segment;
@@ -113,40 +113,40 @@ void add_segment_to_playlist(media_playlist_t *dest, segment_t *segment)
     ++(dest->nb_segments);
 }
 
-string_list_t* str_utils_list_dup(const string_list_t* list)
+string_list_t *str_utils_list_dup(const string_list_t *list)
 {
-    if(!list) {
+    if (!list) {
         return NULL;
     }
 
-    string_list_t* new_list = (string_list_t*) hls_malloc(sizeof(string_list_t));
+    string_list_t *new_list = (string_list_t *) hls_malloc(sizeof(string_list_t));
     hlsparse_string_list_init(new_list);
 
-    if(list->data) {
+    if (list->data) {
         new_list->data = str_utils_dup(list->data);
     }
     if (list->next) {
         new_list->next = str_utils_list_dup(list->next);
     }
-    
+
     return new_list;
 }
 
 int str_utils_index_of(const char *str, const char *value)
 {
-    if(!str || !value) {
+    if (!str || !value) {
         return -1;
     }
 
     int str_len = strlen(str);
     int val_len = strlen(value);
-    
-    for(int i=0; i<str_len - val_len + 1; ++i) {
+
+    for (int i=0; i<str_len - val_len + 1; ++i) {
         int ii = 0;
-        for(; ii<val_len; ++ii) {
-            if(str[i + ii] != value[ii]) break;
+        for (; ii<val_len; ++ii) {
+            if (str[i + ii] != value[ii]) break;
         }
-        if(ii == val_len) {
+        if (ii == val_len) {
             return i;
         }
     }

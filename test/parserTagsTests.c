@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Joel Freeman and other contributors
+ * Copyright 2023 Joel Freeman and other contributors
  * Released under the MIT license http://opensource.org/licenses/MIT
  * see LICENSE included with package
  */
@@ -312,7 +312,7 @@ void daterange_term_test(void)
     daterange.client_attributes.key = str_utils_dup("key");
     daterange.client_attributes.value.number = 4.f;
     daterange.client_attributes.value_type = PARAM_TYPE_FLOAT;
-    daterange.client_attributes.next = (param_list_t*) hls_malloc(sizeof(param_list_t));
+    daterange.client_attributes.next = (param_list_t *) hls_malloc(sizeof(param_list_t));
     hlsparse_param_list_init(daterange.client_attributes.next);
     daterange.client_attributes.next->key = str_utils_dup("key");
     daterange.client_attributes.next->value_type = PARAM_TYPE_STRING;
@@ -787,11 +787,11 @@ void parse_segment_test(void)
     const char *src = "#EXTINF:5.004,foo";
     segment_t seg;
     hlsparse_segment_init(&seg);
-     
-    int res = parse_segment(NULL, 0, NULL); 
+
+    int res = parse_segment(NULL, 0, NULL);
     CU_ASSERT_EQUAL(res, 0);
 
-    res = parse_segment(NULL, 0, &seg); 
+    res = parse_segment(NULL, 0, &seg);
     CU_ASSERT_EQUAL(res, 0);
 
     res = parse_segment(src, strlen(src), NULL);
@@ -832,7 +832,7 @@ void parse_session_data_test(void)
     res = parse_session_data(NULL, 0, &session);
     CU_ASSERT_EQUAL(res, 0);
 
-    const char *src = "DATA-ID=\"com.example.movie.title\",VALUE=\"value\",LANGUAGE=\"en-US\",URI=\"http://www.example.com\"";    
+    const char *src = "DATA-ID=\"com.example.movie.title\",VALUE=\"value\",LANGUAGE=\"en-US\",URI=\"http://www.example.com\"";
     res = parse_session_data(src, strlen(src), NULL);
     CU_ASSERT_EQUAL(res, strlen(src));
     hlsparse_session_data_term(&session);
@@ -851,8 +851,8 @@ void parse_start_test(void)
 {
     start_t start;
     hlsparse_start_init(&start);
-    
-    int res = parse_start(NULL, 0, NULL);    
+
+    int res = parse_start(NULL, 0, NULL);
     CU_ASSERT_EQUAL(res, 0);
 
     res = parse_start(NULL, 0, &start);

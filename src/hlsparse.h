@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Joel Freeman and other contributors
+ * Copyright 2023 Joel Freeman and other contributors
  * Released under the MIT license http://opensource.org/licenses/MIT
  * see LICENSE included with package
  */
@@ -182,7 +182,7 @@ typedef int         HLSCode;        // HLS_OK or HLS_ERROR
 typedef int         bool_t;         // HLS_TRUE or HLS_FALSE
 typedef uint64_t    timestamp_t;    // ISO timestamp as an integer
 
-typedef void* (*hlsparse_malloc_callback)(size_t);  // user memory allocator callback
+typedef void *(*hlsparse_malloc_callback)(size_t);  // user memory allocator callback
 typedef void (*hlsparse_free_callback)(void *);     // user memory free callback
 
 /**
@@ -426,7 +426,7 @@ typedef struct {
     media_list_t                media;
     stream_inf_list_t           stream_infs;
     int                         nb_stream_infs;
-    iframe_stream_inf_list_t    iframe_stream_infs; 
+    iframe_stream_inf_list_t    iframe_stream_infs;
     int                         nb_iframe_stream_infs;
     string_list_t               custom_tags;
     key_list_t                  session_keys;
@@ -483,7 +483,7 @@ typedef struct {
 /**
  * Global initialization of the library.
  * This function or hlsparse_global_init_mem(m,f) must be called prior to any other API.
- * 
+ *
  * @returns HLS_OK on success.
  */
 HLSCode hlsparse_global_init(void);
@@ -491,7 +491,7 @@ HLSCode hlsparse_global_init(void);
 /**
  * Global initialization of the library with a custom memory allocator.
  * This function or hlsparse_global_init(void) must be called prior to any other API.
- * 
+ *
  * @param m user defined malloc callback.
  * @param f user defined free callback.
  * @returns HLS_OK on success.
@@ -562,7 +562,7 @@ int hlsparse_media_playlist(const char *src, size_t size, media_playlist_t *dest
 
 /**
  * writes an HLS multivariant playlist from a multivariant_playlist_t structure.
- * 
+ *
  * @param dest A NULL pointer which will be assiged to the output UTF-8 string.
  * @param dest_size The size of the string assigned to 'dest'.
  * @param multivariant The multivariant playlist structure used to write a playlist from.
@@ -572,7 +572,7 @@ HLSCode hlswrite_multivariant_playlist(char **dest, int *dest_size, multivariant
 
 /**
  * writes an HLS media playlist from a media_playlist_t structure.
- * 
+ *
  * @param dest A NULL pointer which will be assiged to the output UTF-8 string.
  * @param dest_size The size of the string assigned to 'dest'.
  * @param playlist The media playlist structure used to write a playlist from.

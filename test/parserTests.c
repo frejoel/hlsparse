@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Joel Freeman and other contributors
+ * Copyright 2023 Joel Freeman and other contributors
  * Released under the MIT license http://opensource.org/licenses/MIT
  * see LICENSE included with package
  */
@@ -271,7 +271,7 @@ void parse_attrib_data_test(void)
 void setup()
 {
     hlsparse_global_init();
-    
+
     suite("parse", init, clean);
     test("parse_line1", parse_line_test1);
     test("parse_line2", parse_line_test2);

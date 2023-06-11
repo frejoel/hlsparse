@@ -13,7 +13,7 @@ HLSCode hlsparse_global_init(void)
 
 HLSCode hlsparse_init_mem(hlsparse_malloc_callback m, hlsparse_free_callback f)
 {
-    if(!m || !f) {
+    if (!m || !f) {
         return HLS_ERROR;
     }
     hls_malloc = m;
@@ -23,7 +23,7 @@ HLSCode hlsparse_init_mem(hlsparse_malloc_callback m, hlsparse_free_callback f)
 
 HLSCode hlsparse_multivariant_playlist_init(multivariant_playlist_t *dest)
 {
-    if(!dest) {
+    if (!dest) {
         return HLS_ERROR;
     }
 
@@ -33,10 +33,10 @@ HLSCode hlsparse_multivariant_playlist_init(multivariant_playlist_t *dest)
 
 HLSCode hlsparse_media_playlist_init(media_playlist_t *dest)
 {
-    if(!dest) {
+    if (!dest) {
         return HLS_ERROR;
     }
-    
+
     memset(dest, 0, sizeof(media_playlist_t));
     dest->next_segment_daterange_index = -1;
     return HLS_OK;
@@ -49,7 +49,7 @@ HLSCode hlsparse_media_playlist_init(media_playlist_t *dest)
  */
 void hlsparse_byte_range_init(byte_range_t *byte_range)
 {
-    if(byte_range) {
+    if (byte_range) {
         byte_range->n = 0;
         byte_range->o = 0;
     }
@@ -62,7 +62,7 @@ void hlsparse_byte_range_init(byte_range_t *byte_range)
  */
 void hlsparse_ext_inf_init(ext_inf_t *ext_inf)
 {
-    if(ext_inf) {
+    if (ext_inf) {
         ext_inf->duration = 0.f;
         ext_inf->title = NULL;
     }
@@ -75,7 +75,7 @@ void hlsparse_ext_inf_init(ext_inf_t *ext_inf)
  */
 void hlsparse_resolution_init(resolution_t *resolution)
 {
-    if(resolution) {
+    if (resolution) {
         resolution->width = 0;
         resolution->height = 0;
     }
@@ -88,7 +88,7 @@ void hlsparse_resolution_init(resolution_t *resolution)
  */
 void hlsparse_iframe_stream_inf_init(iframe_stream_inf_t *stream_inf)
 {
-    if(stream_inf) {
+    if (stream_inf) {
         memset(stream_inf, 0, sizeof(iframe_stream_inf_t));
     }
 }
@@ -100,7 +100,7 @@ void hlsparse_iframe_stream_inf_init(iframe_stream_inf_t *stream_inf)
  */
 void hlsparse_stream_inf_init(stream_inf_t *stream_inf)
 {
-    if(stream_inf) {
+    if (stream_inf) {
         memset(stream_inf, 0, sizeof(stream_inf_t));
     }
 }
@@ -112,7 +112,7 @@ void hlsparse_stream_inf_init(stream_inf_t *stream_inf)
  */
 void hlsparse_key_init(hls_key_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(hls_key_t));
     }
 }
@@ -124,7 +124,7 @@ void hlsparse_key_init(hls_key_t *dest)
  */
 void hlsparse_map_init(map_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(map_t));
     }
 }
@@ -136,7 +136,7 @@ void hlsparse_map_init(map_t *dest)
  */
 void hlsparse_daterange_init(daterange_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(daterange_t));
     }
 }
@@ -148,7 +148,7 @@ void hlsparse_daterange_init(daterange_t *dest)
  */
 void hlsparse_media_init(media_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(media_t));
     }
 }
@@ -160,7 +160,7 @@ void hlsparse_media_init(media_t *dest)
  */
 void hlsparse_segment_init(segment_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(segment_t));
         dest->type = SEGMENT_TYPE_FULL;
         dest->daterange_index = -1;
@@ -176,7 +176,7 @@ void hlsparse_segment_init(segment_t *dest)
  */
 void hlsparse_session_data_init(session_data_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(session_data_t));
     }
 }
@@ -188,7 +188,7 @@ void hlsparse_session_data_init(session_data_t *dest)
  */
 void hlsparse_start_init(start_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(start_t));
     }
 }
@@ -200,7 +200,7 @@ void hlsparse_start_init(start_t *dest)
  */
 void hlsparse_define_init(define_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(define_t));
     }
 }
@@ -212,7 +212,7 @@ void hlsparse_define_init(define_t *dest)
  */
 void hlsparse_segment_list_init(segment_list_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(segment_list_t));
     }
 }
@@ -224,7 +224,7 @@ void hlsparse_segment_list_init(segment_list_t *dest)
  */
 void hlsparse_session_data_list_init(session_data_list_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(session_data_list_t));
     }
 }
@@ -236,7 +236,7 @@ void hlsparse_session_data_list_init(session_data_list_t *dest)
  */
 void hlsparse_key_list_init(key_list_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(key_list_t));
     }
 }
@@ -248,7 +248,7 @@ void hlsparse_key_list_init(key_list_t *dest)
  */
 void hlsparse_stream_inf_list_init(stream_inf_list_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(stream_inf_list_t));
     }
 }
@@ -260,7 +260,7 @@ void hlsparse_stream_inf_list_init(stream_inf_list_t *dest)
  */
 void hlsparse_iframe_stream_inf_list_init(iframe_stream_inf_list_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(iframe_stream_inf_list_t));
     }
 }
@@ -272,7 +272,7 @@ void hlsparse_iframe_stream_inf_list_init(iframe_stream_inf_list_t *dest)
  */
 void hlsparse_media_list_init(media_list_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(media_list_t));
     }
 }
@@ -284,7 +284,7 @@ void hlsparse_media_list_init(media_list_t *dest)
  */
 void hlsparse_map_list_init(map_list_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(map_list_t));
     }
 }
@@ -296,7 +296,7 @@ void hlsparse_map_list_init(map_list_t *dest)
  */
 void hlsparse_daterange_list_init(daterange_list_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(daterange_list_t));
     }
 }
@@ -308,7 +308,7 @@ void hlsparse_daterange_list_init(daterange_list_t *dest)
  */
 void hlsparse_string_list_init(string_list_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(string_list_t));
     }
 }
@@ -320,7 +320,7 @@ void hlsparse_string_list_init(string_list_t *dest)
  */
 void hlsparse_define_list_init(define_list_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(define_list_t));
     }
 }
@@ -332,7 +332,7 @@ void hlsparse_define_list_init(define_list_t *dest)
  */
 void hlsparse_param_list_init(param_list_t *dest)
 {
-    if(dest) {
+    if (dest) {
         memset(dest, 0, sizeof(param_list_t));
     }
 }

@@ -2,23 +2,24 @@
 #include <stdio.h>
 #include <string.h>
 
-char* read_file(const char* filename) {
-    FILE* file = fopen(filename, "rb");
+char *read_file(const char *filename)
+{
+    FILE *file = fopen(filename, "rb");
     if (file == NULL) {
         fprintf(stderr, "Failed to open file '%s'\n", filename);
         return NULL;
-    }   
+    }
 
     fseek(file, 0L, SEEK_END);
     long file_size = ftell(file);
     rewind(file);
 
-    char* buffer = (char*) malloc(sizeof(char) * (file_size + 1));
+    char *buffer = (char *) malloc(sizeof(char) * (file_size + 1));
     if (buffer == NULL) {
         fclose(file);
         fprintf(stderr, "Failed to allocate memory for file '%s'\n", filename);
         return NULL;
-    }   
+    }
 
     size_t bytes_read = fread(buffer, sizeof(char), file_size, file);
     if (bytes_read != file_size) {
@@ -26,7 +27,7 @@ char* read_file(const char* filename) {
         free(buffer);
         fprintf(stderr, "Failed to read file '%s'\n", filename);
         return NULL;
-    }   
+    }
 
     buffer[file_size] = '\0';
 
@@ -34,10 +35,11 @@ char* read_file(const char* filename) {
     return buffer;
 }
 
-int main() {
+int main()
+{
     // Initialize the library
     HLSCode res = hlsparse_global_init();
-    if(res != HLS_OK) {
+    if (res != HLS_OK) {
         fprintf(stderr, "failed to initialize hlsparse");
         return -1;
     }
@@ -45,7 +47,7 @@ int main() {
     // create a multivariant playlist structure
     multivariant_playlist_t myMultivariant;
     res = hlsparse_multivariant_playlist_init(&myMultivariant);
-    if(res != HLS_OK) {
+    if (res != HLS_OK) {
         fprintf(stderr, "failed to initialize multivariant playlist structure");
         return -1;
     }
@@ -53,7 +55,7 @@ int main() {
     char *m3u8 = read_file("test_multivariant.m3u8");
     printf("test_multivariant.m3u8\n%s", m3u8);
 
-    const char * multivariantSrc = m3u8;
+    const char *multivariantSrc = m3u8;
     // parse the playlist information into our multivariant structure
     int read = hlsparse_multivariant_playlist(multivariantSrc, strlen(multivariantSrc), &myMultivariant);
     printf("read a total of %d bytes parsing the multivariant playlist source\n", read);
@@ -63,7 +65,7 @@ int main() {
     // print out all the StreamInf bitrates that were found
     stream_inf_list_t *streamInf = &myMultivariant.stream_infs;
     int count = 0;
-    while(streamInf && streamInf->data) {
+    while (streamInf && streamInf->data) {
         printf("StreamInf %d Uri: %s\n", count, streamInf->data->uri);
         printf("StreamInf %d Bandwidth: %f\n", count, streamInf->data->bandwidth);
         printf("StreamInf %d Codec: %s\n", count, streamInf->data->codecs);

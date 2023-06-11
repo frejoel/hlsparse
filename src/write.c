@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Joel Freeman and other contributors
+ * Copyright 2023 Joel Freeman and other contributors
  * Released under the MIT license http://opensource.org/licenses/MIT
  * see LICENSE included with package
  */
@@ -68,14 +68,14 @@ void timestamp_to_iso_date(timestamp_t timestamp, char *date_str, size_t size)
     snprintf(date_str, size, "%s.%03dZ", tmp, milli);
 }
 
-const char* find_relative_path(const char *path, const char *base)
+const char *find_relative_path(const char *path, const char *base)
 {
-    if(path && base) {
+    if (path && base) {
         const char *rel = path;
         const char *ptr_pl = base;
         const char *ptr_seg = path;
-        while(*ptr_seg == *ptr_pl) {
-            if(*ptr_seg == '/') {
+        while (*ptr_seg == *ptr_pl) {
+            if (*ptr_seg == '/') {
                 rel = ptr_seg + 1;
             }
             ptr_seg++;
@@ -88,25 +88,25 @@ const char* find_relative_path(const char *path, const char *base)
 
 HLSCode hlswrite_multivariant_playlist(char **dest, int *dest_size, multivariant_playlist_t *multivariant)
 {
-    if(!dest || dest_size <= 0 || !multivariant) {
+    if (!dest || dest_size <= 0 || !multivariant) {
         return HLS_ERROR;
     }
 
     page_t *root = create_page(NULL);
     page_t *latest = root;
-    
+
     ADD_TAG(EXTM3U);
-    if(multivariant->version > 0) {
+    if (multivariant->version > 0) {
         ADD_TAG_INT(EXTXVERSION, multivariant->version);
     }
-    if(multivariant->nb_defines > 0) {
+    if (multivariant->nb_defines > 0) {
         define_list_t *def = &multivariant->defines;
-        while(def && def->data) {
-            if(def->data->type == DEFINE_TYPE_NAME) {
+        while (def && def->data) {
+            if (def->data->type == DEFINE_TYPE_NAME) {
                 START_TAG_STR(EXTXDEFINE, NAME, def->data->key);
-            }else if(def->data->type == DEFINE_TYPE_IMPORT) {
+            } else if (def->data->type == DEFINE_TYPE_IMPORT) {
                 START_TAG_STR(EXTXDEFINE, IMPORT, def->data->key);
-            }else if (def->data->type == DEFINE_TYPE_QUERYPARAM) {
+            } else if (def->data->type == DEFINE_TYPE_QUERYPARAM) {
                 START_TAG_STR(EXTXDEFINE, QUERYPARAM, def->data->key);
             }
             ADD_PARAM_STR(VALUE, def->data->value);
@@ -118,18 +118,26 @@ HLSCode hlswrite_multivariant_playlist(char **dest, int *dest_size, multivariant
     ADD_XSTART_TAG_OPTL(multivariant->start);
 
     media_list_t *media = &multivariant->media;
-    while(media && media->data) {
-        switch(media->data->type) {
-            case MEDIA_TYPE_AUDIO: START_TAG_ENUM(EXTXMEDIA, TYPE, AUDIO); break;
-            case MEDIA_TYPE_VIDEO: START_TAG_ENUM(EXTXMEDIA, TYPE, VIDEO); break;
-            case MEDIA_TYPE_SUBTITLES: START_TAG_ENUM(EXTXMEDIA, TYPE, SUBTITLES); break;
-            case MEDIA_TYPE_CLOSEDCAPTIONS: START_TAG_ENUM(EXTXMEDIA, TYPE, CLOSEDCAPTIONS); break;
+    while (media && media->data) {
+        switch (media->data->type) {
+            case MEDIA_TYPE_AUDIO:
+                START_TAG_ENUM(EXTXMEDIA, TYPE, AUDIO);
+                break;
+            case MEDIA_TYPE_VIDEO:
+                START_TAG_ENUM(EXTXMEDIA, TYPE, VIDEO);
+                break;
+            case MEDIA_TYPE_SUBTITLES:
+                START_TAG_ENUM(EXTXMEDIA, TYPE, SUBTITLES);
+                break;
+            case MEDIA_TYPE_CLOSEDCAPTIONS:
+                START_TAG_ENUM(EXTXMEDIA, TYPE, CLOSEDCAPTIONS);
+                break;
         }
 
-        if(multivariant->uri) {
+        if (multivariant->uri) {
             const char *uri = find_relative_path(media->data->uri, multivariant->uri);
             ADD_PARAM_STR_OPTL(URI, uri);
-        }else{
+        } else {
             ADD_PARAM_STR_OPTL(URI, media->data->uri);
         }
         ADD_PARAM_STR(GROUPID, media->data->group_id);
@@ -141,82 +149,99 @@ HLSCode hlswrite_multivariant_playlist(char **dest, int *dest_size, multivariant
         ADD_PARAM_BOOL_YES_ONLY(AUTOSELECT, media->data->auto_select);
         ADD_PARAM_BOOL_YES_ONLY(FORCED, media->data->forced);
 
-        switch(media->data->instream_id) {
-            case MEDIA_INSTREAMID_CC1: ADD_PARAM_STR(INSTREAMID, CC1); break;
-            case MEDIA_INSTREAMID_CC2: ADD_PARAM_STR(INSTREAMID, CC2); break;
-            case MEDIA_INSTREAMID_CC3: ADD_PARAM_STR(INSTREAMID, CC3); break;
-            case MEDIA_INSTREAMID_CC4: ADD_PARAM_STR(INSTREAMID, CC4); break;
+        switch (media->data->instream_id) {
+            case MEDIA_INSTREAMID_CC1:
+                ADD_PARAM_STR(INSTREAMID, CC1);
+                break;
+            case MEDIA_INSTREAMID_CC2:
+                ADD_PARAM_STR(INSTREAMID, CC2);
+                break;
+            case MEDIA_INSTREAMID_CC3:
+                ADD_PARAM_STR(INSTREAMID, CC3);
+                break;
+            case MEDIA_INSTREAMID_CC4:
+                ADD_PARAM_STR(INSTREAMID, CC4);
+                break;
             case MEDIA_INSTREAMID_SERVICE: {
                 latest = pgprintf(latest, ",%s=\"%s%d\"", INSTREAMID, SERVICE, media->data->service_n);
-                } break;
+            }
+            break;
         }
 
         ADD_PARAM_STR_OPTL(CHARACTERISTICS, media->data->characteristics);
         ADD_PARAM_STR_OPTL(CHANNELS, media->data->channels);
         END_TAG();
-        
+
         media = media->next;
     }
 
     // stream infs
     stream_inf_list_t *stream_inf_list = &multivariant->stream_infs;
-    while(stream_inf_list && stream_inf_list->data) {
+    while (stream_inf_list && stream_inf_list->data) {
         stream_inf_t *inf = stream_inf_list->data;
         START_TAG_INT(EXTXSTREAMINF, BANDWIDTH, (int)inf->bandwidth);
         ADD_PARAM_INT_OPTL(AVERAGEBANDWIDTH, (int)inf->avg_bandwidth);
         ADD_PARAM_STR_OPTL(CODECS, inf->codecs);
         ADD_PARAM_RES_OPTL(RESOLUTION, inf->resolution);
         ADD_PARAM_FLOAT_OPTL(FRAMERATE, inf->frame_rate);
-        switch(inf->hdcp_level) {
-            case HDCP_LEVEL_NONE: latest = pgprintf(latest, ",%s=%s", HDCPLEVEL, NONE); break;
-            case HDCP_LEVEL_TYPE0: latest = pgprintf(latest, ",%s=%s", HDCPLEVEL, TYPE0); break;
+        switch (inf->hdcp_level) {
+            case HDCP_LEVEL_NONE:
+                latest = pgprintf(latest, ",%s=%s", HDCPLEVEL, NONE);
+                break;
+            case HDCP_LEVEL_TYPE0:
+                latest = pgprintf(latest, ",%s=%s", HDCPLEVEL, TYPE0);
+                break;
         }
         ADD_PARAM_STR_OPTL(AUDIO, inf->audio);
         ADD_PARAM_STR_OPTL(VIDEO, inf->video);
         ADD_PARAM_STR_OPTL(SUBTITLES, inf->subtitles);
         ADD_PARAM_STR_OPTL(CLOSEDCAPTIONS, inf->closed_captions);
         END_TAG();
-        if(multivariant->uri) {
+        if (multivariant->uri) {
             const char *uri = find_relative_path(inf->uri, multivariant->uri);
             ADD_URI(uri);
-        }else{
+        } else {
             ADD_URI(inf->uri);
         }
         stream_inf_list = stream_inf_list->next;
     }
 
     iframe_stream_inf_list_t *if_stream_inf_list = &multivariant->iframe_stream_infs;
-    while(if_stream_inf_list && if_stream_inf_list->data) {
+    while (if_stream_inf_list && if_stream_inf_list->data) {
         iframe_stream_inf_t *inf = if_stream_inf_list->data;
         START_TAG_INT(EXTXIFRAMESTREAMINF, BANDWIDTH, (int)inf->bandwidth);
         ADD_PARAM_INT_OPTL(AVERAGEBANDWIDTH, (int)inf->avg_bandwidth);
         ADD_PARAM_STR_OPTL(CODECS, inf->codecs);
         ADD_PARAM_RES_OPTL(RESOLUTION, inf->resolution);
-        switch(inf->hdcp_level) {
-            case HDCP_LEVEL_NONE: latest = pgprintf(latest, ",%s=%s", HDCPLEVEL, NONE); break;
-            case HDCP_LEVEL_TYPE0: latest = pgprintf(latest, ",%s=%s", HDCPLEVEL, TYPE0); break;
+        switch (inf->hdcp_level) {
+            case HDCP_LEVEL_NONE:
+                latest = pgprintf(latest, ",%s=%s", HDCPLEVEL, NONE);
+                break;
+            case HDCP_LEVEL_TYPE0:
+                latest = pgprintf(latest, ",%s=%s", HDCPLEVEL, TYPE0);
+                break;
         }
         ADD_PARAM_STR_OPTL(VIDEO, inf->video);
-        if(multivariant->uri) {
+        if (multivariant->uri) {
             const char *uri = find_relative_path(inf->uri, multivariant->uri);
             ADD_PARAM_STR(URI, uri);
-        }else{
+        } else {
             ADD_PARAM_STR(URI, inf->uri);
         }
-        
+
         END_TAG();
         if_stream_inf_list = if_stream_inf_list->next;
-    } 
+    }
 
     session_data_list_t *sess_data = &multivariant->session_data;
-    while(sess_data && sess_data->data) {
+    while (sess_data && sess_data->data) {
         session_data_t *sess = sess_data->data;
         START_TAG_STR(EXTXSESSIONDATA, DATAID, sess->data_id);
         ADD_PARAM_STR_OPTL(VALUE, sess->value);
-        if(multivariant->uri) {
+        if (multivariant->uri) {
             const char *uri = find_relative_path(sess->uri, multivariant->uri);
             ADD_PARAM_STR_OPTL(URI, uri);
-        }else{
+        } else {
             ADD_PARAM_STR_OPTL(URI, sess->uri);
         }
         ADD_PARAM_STR_OPTL(LANGUAGE, sess->language);
@@ -225,17 +250,23 @@ HLSCode hlswrite_multivariant_playlist(char **dest, int *dest_size, multivariant
     }
 
     key_list_t *key_list = &multivariant->session_keys;
-    while(key_list && key_list->data) {
+    while (key_list && key_list->data) {
         hls_key_t *key = key_list->data;
-        switch(key->method) {
-            case KEY_METHOD_NONE: START_TAG_ENUM(EXTXSESSIONKEY, METHOD, NONE); break;
-            case KEY_METHOD_AES128: START_TAG_ENUM(EXTXSESSIONKEY, METHOD, AES128); break;
-            case KEY_METHOD_SAMPLEAES: START_TAG_ENUM(EXTXSESSIONKEY, METHOD, SAMPLEAES); break;
+        switch (key->method) {
+            case KEY_METHOD_NONE:
+                START_TAG_ENUM(EXTXSESSIONKEY, METHOD, NONE);
+                break;
+            case KEY_METHOD_AES128:
+                START_TAG_ENUM(EXTXSESSIONKEY, METHOD, AES128);
+                break;
+            case KEY_METHOD_SAMPLEAES:
+                START_TAG_ENUM(EXTXSESSIONKEY, METHOD, SAMPLEAES);
+                break;
         }
-        if(multivariant->uri) {
+        if (multivariant->uri) {
             const char *uri = find_relative_path(key->uri, multivariant->uri);
             ADD_PARAM_STR_OPTL(URI, uri);
-        }else {
+        } else {
             ADD_PARAM_STR_OPTL(URI, key->uri);
         }
         ADD_PARAM_HEX_OPTL(KEY_IV, key->iv, 16);
@@ -246,15 +277,15 @@ HLSCode hlswrite_multivariant_playlist(char **dest, int *dest_size, multivariant
     }
 
     page_to_str(root, dest, dest_size);
-    
+
     free_page_root(root);
 
     return HLS_OK;
 }
 
-HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist) 
+HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
 {
-    if(!dest || !dest_size || !playlist) {
+    if (!dest || !dest_size || !playlist) {
         return HLS_ERROR;
     }
 
@@ -263,14 +294,14 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
 
     ADD_TAG(EXTM3U);
     ADD_TAG_INT(EXTXVERSION, playlist->version);
-    if(playlist->nb_defines > 0) {
+    if (playlist->nb_defines > 0) {
         define_list_t *def = &playlist->defines;
-        while(def && def->data) {
-            if(def->data->type == DEFINE_TYPE_NAME) {
+        while (def && def->data) {
+            if (def->data->type == DEFINE_TYPE_NAME) {
                 START_TAG_STR(EXTXDEFINE, NAME, def->data->key);
-            }else if(def->data->type == DEFINE_TYPE_IMPORT) {
+            } else if (def->data->type == DEFINE_TYPE_IMPORT) {
                 START_TAG_STR(EXTXDEFINE, IMPORT, def->data->key);
-            }else if (def->data->type == DEFINE_TYPE_QUERYPARAM) {
+            } else if (def->data->type == DEFINE_TYPE_QUERYPARAM) {
                 START_TAG_STR(EXTXDEFINE, QUERYPARAM, def->data->key);
             }
             ADD_PARAM_STR(VALUE, def->data->value);
@@ -280,19 +311,23 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
     }
     // target-duration is rounded to the nearest int
     ADD_TAG_INT(EXTXTARGETDURATION, (int)(playlist->target_duration + 0.5f));
-    if(playlist->part_target_duration != 0.f) {
+    if (playlist->part_target_duration != 0.f) {
         START_TAG_FLOAT(EXTXPARTINF, PARTTARGET, playlist->part_target_duration);
         END_TAG();
     }
     ADD_TAG_INT(EXTXMEDIASEQUENCE, playlist->media_sequence);
     ADD_TAG_INT(EXTXDISCONTINUITYSEQ, playlist->discontinuity_sequence);
-    switch(playlist->playlist_type) {
-        case PLAYLIST_TYPE_EVENT: ADD_TAG_ENUM(EXTXPLAYLISTTYPE, EVENT); break;
-        case PLAYLIST_TYPE_VOD: ADD_TAG_ENUM(EXTXPLAYLISTTYPE, VOD); break;
+    switch (playlist->playlist_type) {
+        case PLAYLIST_TYPE_EVENT:
+            ADD_TAG_ENUM(EXTXPLAYLISTTYPE, EVENT);
+            break;
+        case PLAYLIST_TYPE_VOD:
+            ADD_TAG_ENUM(EXTXPLAYLISTTYPE, VOD);
+            break;
     }
     ADD_TAG_IF_TRUE(EXTXIFRAMESONLY, playlist->iframes_only);
 
-    if(playlist->nb_segments > 0) {
+    if (playlist->nb_segments > 0) {
         // first PDT
         char buf[30];
         timestamp_to_iso_date(playlist->segments.data->pdt, buf, 30);
@@ -303,46 +338,51 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
     int key_idx = -1; // -1 == no key
     int bitrate = 0; // invalid bitrate (won't write tag)
     segment_list_t *seg = &playlist->segments;
-    segment_t* prev_seg = NULL;
+    segment_t *prev_seg = NULL;
 
-    for(i=0; i<playlist->nb_segments; ++i)
-    {
+    for (i=0; i<playlist->nb_segments; ++i) {
         // if the previous segment was a partial segment, we don't need
         // to rewrite all the tags
         if (!prev_seg || (prev_seg->type & SEGMENT_TYPE_PART) == 0) {
             // write custom tags first even if the segment uri isn't available
             // because we could have custom tags indicating actions here e.g. ad post-roll injection
             string_list_t *ctags = &seg->data->custom_tags;
-            while(ctags && ctags->data) {
+            while (ctags && ctags->data) {
                 ADD_TAG(ctags->data);
                 ctags = ctags->next;
             }
 
             // only write the other tags if the uri exists
-            if(seg->data->uri) {
+            if (seg->data->uri) {
                 // new Key index?
-                if(seg->data->key_index > key_idx) {
+                if (seg->data->key_index > key_idx) {
                     key_idx = seg->data->key_index;
                     // find the key
                     int j=0;
                     key_list_t *key_list = &playlist->keys;
-                    hls_key_t *key = NULL;  
-                    while(key_list && key_list->data && j++ <= key_idx) {
+                    hls_key_t *key = NULL;
+                    while (key_list && key_list->data && j++ <= key_idx) {
                         key = key_list->data;
                         key_list = key_list->next;
                     }
 
                     // add key tag
-                    if(key) {
-                        switch(key->method) {
-                            case KEY_METHOD_NONE: START_TAG_ENUM(EXTXKEY, METHOD, NONE); break;
-                            case KEY_METHOD_AES128: START_TAG_ENUM(EXTXKEY, METHOD, AES128); break;
-                            case KEY_METHOD_SAMPLEAES: START_TAG_ENUM(EXTXKEY, METHOD, SAMPLEAES); break;
+                    if (key) {
+                        switch (key->method) {
+                            case KEY_METHOD_NONE:
+                                START_TAG_ENUM(EXTXKEY, METHOD, NONE);
+                                break;
+                            case KEY_METHOD_AES128:
+                                START_TAG_ENUM(EXTXKEY, METHOD, AES128);
+                                break;
+                            case KEY_METHOD_SAMPLEAES:
+                                START_TAG_ENUM(EXTXKEY, METHOD, SAMPLEAES);
+                                break;
                         }
-                        if(playlist->uri) {
+                        if (playlist->uri) {
                             const char *uri = find_relative_path(key->uri, playlist->uri);
                             ADD_PARAM_STR_OPTL(URI, uri);
-                        }else{
+                        } else {
                             ADD_PARAM_STR_OPTL(URI, key->uri);
                         }
                         ADD_PARAM_HEX_OPTL(KEY_IV, key->iv, 16);
@@ -354,51 +394,63 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
 
                 // if a bitrate is set to zero after a valid bitrate, we need to set it back to zero
                 // even though it's probably incorrect
-                if((seg->data->bitrate > 0 || bitrate > 0) && seg->data->bitrate != bitrate) {
+                if ((seg->data->bitrate > 0 || bitrate > 0) && seg->data->bitrate != bitrate) {
                     ADD_TAG_INT(EXTXBITRATE, seg->data->bitrate);
                     bitrate = seg->data->bitrate;
                 }
             }
-                
+
             int dr_idx = seg->data->daterange_index;
-            if(dr_idx >= 0)
-            {
+            if (dr_idx >= 0) {
                 daterange_list_t *dr_list = &playlist->dateranges;
-                while(dr_idx > 0 && dr_idx < playlist->nb_dateranges) {
+                while (dr_idx > 0 && dr_idx < playlist->nb_dateranges) {
                     dr_list = dr_list->next;
                     --dr_idx;
                 }
                 if (dr_list && dr_list->data) {
                     // #EXT-X-DATERANGE:ID=\"splice\",DURATION=59.94,SCTE35-IN=0xFF,CUE=\"POST,PRE\"\n
-                    daterange_t* dr = dr_list->data;
+                    daterange_t *dr = dr_list->data;
                     START_TAG_STR(EXTXDATERANGE, ID, dr->id ? dr->id : "UNDEFINED");
                     ADD_PARAM_STR_OPTL(CLASS, dr->klass);
                     char buffer[30];
                     timestamp_to_iso_date(dr->start_date, buffer, 50);
                     ADD_PARAM_STR(STARTDATE, buffer);
                     // TODO: do this programmatically
-                    switch(dr->cue) {
-                        case (CUE_PRE | CUE_POST | CUE_ONCE): ADD_PARAM_STR(CUE, PRE","POST","ONCE","); break;
-                        case (CUE_PRE | CUE_POST): ADD_PARAM_STR(CUE, PRE","POST); break;
-                        case (CUE_PRE | CUE_ONCE): ADD_PARAM_STR(CUE, PRE","ONCE); break;
-                        case (CUE_POST | CUE_ONCE): ADD_PARAM_STR(CUE, POST","ONCE);
-                        case CUE_PRE: ADD_PARAM_STR(CUE, PRE); break;
-                        case CUE_POST: ADD_PARAM_STR(CUE, POST); break;
-                        case CUE_ONCE: ADD_PARAM_STR(CUE, ONCE); break;
+                    switch (dr->cue) {
+                        case (CUE_PRE | CUE_POST | CUE_ONCE):
+                            ADD_PARAM_STR(CUE, PRE","POST","ONCE",");
+                            break;
+                        case (CUE_PRE | CUE_POST):
+                            ADD_PARAM_STR(CUE, PRE","POST);
+                            break;
+                        case (CUE_PRE | CUE_ONCE):
+                            ADD_PARAM_STR(CUE, PRE","ONCE);
+                            break;
+                        case (CUE_POST | CUE_ONCE):
+                            ADD_PARAM_STR(CUE, POST","ONCE);
+                        case CUE_PRE:
+                            ADD_PARAM_STR(CUE, PRE);
+                            break;
+                        case CUE_POST:
+                            ADD_PARAM_STR(CUE, POST);
+                            break;
+                        case CUE_ONCE:
+                            ADD_PARAM_STR(CUE, ONCE);
+                            break;
                     }
-                    if(dr->end_date > dr->start_date) {
+                    if (dr->end_date > dr->start_date) {
                         timestamp_to_iso_date(dr->end_date, buffer, 50);
                         ADD_PARAM_STR(ENDDATE, buffer);
                     }
-                    if(dr->duration >= 0.f) ADD_PARAM_FLOAT(DURATION, dr->duration);
-                    if(dr->planned_duration >= 0.f) ADD_PARAM_FLOAT(PLANNEDDURATION, dr->planned_duration);
-                    param_list_t* client_attrs = &dr->client_attributes;
-                    while(client_attrs && client_attrs->key) {
-                        if(client_attrs->value_type == PARAM_TYPE_STRING) {
+                    if (dr->duration >= 0.f) ADD_PARAM_FLOAT(DURATION, dr->duration);
+                    if (dr->planned_duration >= 0.f) ADD_PARAM_FLOAT(PLANNEDDURATION, dr->planned_duration);
+                    param_list_t *client_attrs = &dr->client_attributes;
+                    while (client_attrs && client_attrs->key) {
+                        if (client_attrs->value_type == PARAM_TYPE_STRING) {
                             ADD_PARAM_STR(client_attrs->key, client_attrs->value.data);
-                        }else if(client_attrs->value_type == PARAM_TYPE_FLOAT) {
+                        } else if (client_attrs->value_type == PARAM_TYPE_FLOAT) {
                             ADD_PARAM_FLOAT(client_attrs->key, client_attrs->value.number);
-                        }else if(client_attrs->value_type == PARAM_TYPE_DATA) {
+                        } else if (client_attrs->value_type == PARAM_TYPE_DATA) {
                             ADD_PARAM_HEX(client_attrs->key, client_attrs->value.data, client_attrs->value_size);
                         }
                         client_attrs = client_attrs->next;
@@ -411,7 +463,7 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
                 }
             }
 
-            if(seg->data->discontinuity == HLS_TRUE) {
+            if (seg->data->discontinuity == HLS_TRUE) {
                 ADD_TAG(EXTXDISCONTINUITY);
                 char buf[30];
                 timestamp_to_iso_date(seg->data->pdt, buf, 30);
@@ -424,40 +476,40 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
             START_TAG_INT(EXTXSKIP, SKIPPEDSEGMENTS, seg->data->skipped_segments);
             ADD_PARAM_STR_OPTL(RECENTLYREMOVEDDATERANGES, seg->data->recently_removed_dateranges);
             END_TAG();
-        } else if(seg->data->uri) {
-            if((seg->data->type & SEGMENT_TYPE_FULL) > 0) {
-                if((seg->data->type & SEGMENT_TYPE_GAP) > 0) {
+        } else if (seg->data->uri) {
+            if ((seg->data->type & SEGMENT_TYPE_FULL) > 0) {
+                if ((seg->data->type & SEGMENT_TYPE_GAP) > 0) {
                     ADD_TAG(EXTXGAP);
                 }
 
-                if(seg->data->byte_range.n > 0) {
-                    if(seg->data->byte_range.o != 0) {
+                if (seg->data->byte_range.n > 0) {
+                    if (seg->data->byte_range.o != 0) {
                         latest = pgprintf(latest, "#%s:%d@%d\n", EXTXBYTERANGE, seg->data->byte_range.n, seg->data->byte_range.o);
-                    }else{
+                    } else {
                         latest = pgprintf(latest, "#%s:%d\n", EXTXBYTERANGE, seg->data->byte_range.n);
                     }
                 }
-        
-                if(seg->data->title) {
+
+                if (seg->data->title) {
                     latest = pgprintf(latest, "#%s:%.3f,%s\n", EXTINF, seg->data->duration, seg->data->title);
-                }else{
+                } else {
                     latest = pgprintf(latest, "#%s:%.3f,\n", EXTINF, seg->data->duration);
                 }
-                if(playlist->uri) {
+                if (playlist->uri) {
                     const char *uri = find_relative_path(seg->data->uri, playlist->uri);
                     ADD_URI(uri);
-                }else{
+                } else {
                     ADD_URI(seg->data->uri);
                 }
-            }else if((seg->data->type & SEGMENT_TYPE_PART) > 0) {
+            } else if ((seg->data->type & SEGMENT_TYPE_PART) > 0) {
                 // partial segments get written a little differenlt
                 START_TAG_FLOAT(EXTXPART, DURATION, seg->data->duration);
                 ADD_PARAM_BOOL_YES_ONLY(INDEPENDENT, seg->data->independent);
-                
-                if(seg->data->byte_range.n > 0) {
-                    if(seg->data->byte_range.o != 0) {
+
+                if (seg->data->byte_range.n > 0) {
+                    if (seg->data->byte_range.o != 0) {
                         latest = pgprintf(latest, ",%s=\"%d@%d\"", BYTERANGE, seg->data->byte_range.n, seg->data->byte_range.o);
-                    }else{
+                    } else {
                         latest = pgprintf(latest, ",%s=\"%d\"", BYTERANGE, seg->data->byte_range.n);
                     }
                 }
@@ -480,10 +532,10 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
     return HLS_OK;
 }
 
-page_t* write_to_page(page_t *page, const char *buffer, int size)
+page_t *write_to_page(page_t *page, const char *buffer, int size)
 {
-    while(size > 0) {
-        if(page->cur >= page->buffer + page->size) {
+    while (size > 0) {
+        if (page->cur >= page->buffer + page->size) {
             page = create_page(page);
         }
         *page->cur = *buffer;
@@ -494,27 +546,28 @@ page_t* write_to_page(page_t *page, const char *buffer, int size)
     return page;
 }
 
-page_t* create_page(page_t *page)
+page_t *create_page(page_t *page)
 {
-    page_t *new_page = (page_t*)hls_malloc(sizeof(page_t));
+    page_t *new_page = (page_t *)hls_malloc(sizeof(page_t));
     memset(new_page, 0, sizeof(page_t));
-    new_page->buffer = (char*)hls_malloc(PAGE_SIZE);
+    new_page->buffer = (char *)hls_malloc(PAGE_SIZE);
     new_page->size = PAGE_SIZE;
     new_page->cur = new_page->buffer;
     new_page->next = NULL;
 
-    if(page) {
+    if (page) {
         page->next = new_page;
     }
 
     return new_page;
 }
 
-void free_page_root(page_t *root) {
-    page_t * freed = root; 
+void free_page_root(page_t *root)
+{
+    page_t *freed = root;
     while (freed) {
         hls_free(freed->buffer);
-        page_t * curr = freed;
+        page_t *curr = freed;
         freed = freed->next;
         hls_free(curr);
     }
@@ -537,16 +590,16 @@ void page_to_str(page_t *page, char **dest, int *dest_size)
 {
     int full_size = 0;
     const page_t *pg_ptr = page;
-    
-    while(pg_ptr) {
+
+    while (pg_ptr) {
         full_size += pg_ptr->cur - pg_ptr->buffer;
         pg_ptr = pg_ptr->next;
     }
 
-    char *output = (char*) hls_malloc(full_size+1);
+    char *output = (char *) hls_malloc(full_size+1);
     char *ptr = output;
     pg_ptr = page;
-    while(pg_ptr) {
+    while (pg_ptr) {
         int pg_size = pg_ptr->cur - pg_ptr->buffer;
         memcpy(ptr, pg_ptr->buffer, pg_size);
         ptr += pg_size;

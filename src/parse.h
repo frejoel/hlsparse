@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Joel Freeman and other contributors
+ * Copyright 2023 Joel Freeman and other contributors
  * Released under the MIT license http://opensource.org/licenses/MIT
  * see LICENSE included with package
  */
@@ -30,7 +30,7 @@ int parse_str_to_float(const char *str, float *dest, size_t size);
 int parse_date(const char *src, uint64_t *dest, size_t size);
 int parse_attrib_str(const char *src, char **dest, size_t size);
 int parse_attrib_data(const char *src, char **dest, size_t size);
-int parse_multivariant_playlist_tag(const char *src, size_t size, multivariant_playlist_t *dest); 
+int parse_multivariant_playlist_tag(const char *src, size_t size, multivariant_playlist_t *dest);
 int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *dest);
 
 int parse_byte_range(const char *src, size_t size, byte_range_t *dest);

@@ -6,11 +6,11 @@
 
 HLSCode hlsparse_multivariant_playlist_term(multivariant_playlist_t *dest)
 {
-    if(!dest) {
+    if (!dest) {
         return HLS_ERROR;
     }
 
-    if(dest->uri) {
+    if (dest->uri) {
         char **params[] = {
             &dest->uri
         };
@@ -28,22 +28,22 @@ HLSCode hlsparse_multivariant_playlist_term(multivariant_playlist_t *dest)
 
 HLSCode hlsparse_media_playlist_term(media_playlist_t *dest)
 {
-    if(!dest) {
+    if (!dest) {
         return HLS_ERROR;
     }
 
-    if(dest->uri) {
+    if (dest->uri) {
         char **params[] = {
             &dest->uri
         };
         hlsparse_param_term(params, 1);
     }
-    
+
     hlsparse_string_list_term(&dest->custom_tags);
     hlsparse_segment_list_term(&dest->segments);
     hlsparse_map_list_term(&dest->maps);
     hlsparse_daterange_list_term(&dest->dateranges);
-    
+
     return HLS_OK;
 }
 
@@ -55,8 +55,8 @@ HLSCode hlsparse_media_playlist_term(media_playlist_t *dest)
  */
 void hlsparse_param_term(char ***params, int size)
 {
-    for(int i=0; i<size; ++i) {
-        if(params[i] && *params[i]) {
+    for (int i=0; i<size; ++i) {
+        if (params[i] && *params[i]) {
             hls_free(*params[i]);
             *params[i] = NULL;
         }
@@ -73,14 +73,14 @@ void hlsparse_param_term(char ***params, int size)
  */
 void hlsparse_define_list_term(define_list_t *dest)
 {
-    if(dest) {
-        if(dest->data) {
+    if (dest) {
+        if (dest->data) {
             hls_free(dest->data);
         }
 
         define_list_t *ptr = dest->next;
 
-        if(ptr) {
+        if (ptr) {
             hlsparse_define_list_term(ptr);
             hls_free(ptr);
         }
@@ -97,15 +97,15 @@ void hlsparse_define_list_term(define_list_t *dest)
  */
 void hlsparse_key_list_term(key_list_t *dest)
 {
-    if(dest) {
-        if(dest->data) {
+    if (dest) {
+        if (dest->data) {
             hlsparse_key_term(dest->data);
             hls_free(dest->data);
         }
 
         key_list_t *ptr = dest->next;
 
-        if(ptr) {
+        if (ptr) {
             hlsparse_key_list_term(ptr);
             hls_free(ptr);
         }
@@ -122,15 +122,15 @@ void hlsparse_key_list_term(key_list_t *dest)
  */
 void hlsparse_map_list_term(map_list_t *dest)
 {
-    if(dest) {
-        if(dest->data) {
+    if (dest) {
+        if (dest->data) {
             hlsparse_map_term(dest->data);
             hls_free(dest->data);
         }
 
         map_list_t *ptr = dest->next;
 
-        if(ptr) {
+        if (ptr) {
             hlsparse_map_list_term(ptr);
             hls_free(ptr);
         }
@@ -147,7 +147,7 @@ void hlsparse_map_list_term(map_list_t *dest)
  */
 void hlsparse_ext_inf_term(ext_inf_t *ext_inf)
 {
-    if(ext_inf) {
+    if (ext_inf) {
         char **params[] = { &ext_inf->title };
         hlsparse_param_term(params, 1);
     }
@@ -163,13 +163,13 @@ void hlsparse_ext_inf_term(ext_inf_t *ext_inf)
  */
 void hlsparse_iframe_stream_inf_term(iframe_stream_inf_t *stream_inf)
 {
-    if(stream_inf) {
+    if (stream_inf) {
         char **params[] = { 0, 0, 0};
 
         int i = 0;
-        if(stream_inf->codecs) params[i++] = &stream_inf->codecs;
-        if(stream_inf->video) params[i++] = &stream_inf->video;
-        if(stream_inf->uri) params[i++] = &stream_inf->uri;
+        if (stream_inf->codecs) params[i++] = &stream_inf->codecs;
+        if (stream_inf->video) params[i++] = &stream_inf->video;
+        if (stream_inf->uri) params[i++] = &stream_inf->uri;
 
         hlsparse_param_term(params, i);
     }
@@ -185,17 +185,17 @@ void hlsparse_iframe_stream_inf_term(iframe_stream_inf_t *stream_inf)
  */
 void hlsparse_stream_inf_term(stream_inf_t *stream_inf)
 {
-    if(stream_inf) {
+    if (stream_inf) {
         char **params[] = { 0, 0, 0, 0, 0, 0, 0 };
 
         int i = 0;
-        if(stream_inf->codecs) params[i++] = &stream_inf->codecs;
-        if(stream_inf->video) params[i++] = &stream_inf->video;
-        if(stream_inf->audio) params[i++] = &stream_inf->audio;
-        if(stream_inf->subtitles) params[i++] = &stream_inf->subtitles;
-        if(stream_inf->closed_captions) params[i++] = &stream_inf->closed_captions;
-        if(stream_inf->video) params[i++] = &stream_inf->video;
-        if(stream_inf->uri) params[i++] = &stream_inf->uri;
+        if (stream_inf->codecs) params[i++] = &stream_inf->codecs;
+        if (stream_inf->video) params[i++] = &stream_inf->video;
+        if (stream_inf->audio) params[i++] = &stream_inf->audio;
+        if (stream_inf->subtitles) params[i++] = &stream_inf->subtitles;
+        if (stream_inf->closed_captions) params[i++] = &stream_inf->closed_captions;
+        if (stream_inf->video) params[i++] = &stream_inf->video;
+        if (stream_inf->uri) params[i++] = &stream_inf->uri;
 
         hlsparse_param_term(params, i);
     }
@@ -211,14 +211,14 @@ void hlsparse_stream_inf_term(stream_inf_t *stream_inf)
  */
 void hlsparse_key_term(hls_key_t *dest)
 {
-    if(dest) {
+    if (dest) {
         char **params[] = { 0, 0, 0, 0 };
 
         int i = 0;
-        if(dest->uri) params[i++] = &dest->uri;
-        if(dest->iv) params[i++] = &dest->iv;
-        if(dest->key_format) params[i++] = &dest->key_format;
-        if(dest->key_format_versions) params[i++] = &dest->key_format_versions;
+        if (dest->uri) params[i++] = &dest->uri;
+        if (dest->iv) params[i++] = &dest->iv;
+        if (dest->key_format) params[i++] = &dest->key_format;
+        if (dest->key_format_versions) params[i++] = &dest->key_format_versions;
 
         hlsparse_param_term(params, i);
     }
@@ -234,8 +234,8 @@ void hlsparse_key_term(hls_key_t *dest)
  */
 void hlsparse_map_term(map_t *dest)
 {
-    if(dest) {
-        if(dest->uri) {
+    if (dest) {
+        if (dest->uri) {
             char **params[] = {
                 &dest->uri
             };
@@ -255,7 +255,7 @@ void hlsparse_map_term(map_t *dest)
  */
 void hlsparse_daterange_term(daterange_t *dest)
 {
-    if(dest) {
+    if (dest) {
         char **params[] = {
             &dest->id,
             &dest->klass,
@@ -283,7 +283,7 @@ void hlsparse_daterange_term(daterange_t *dest)
  */
 void hlsparse_media_term(media_t *dest)
 {
-    if(dest) {
+    if (dest) {
         char **params[] = { 0, 0, 0, 0, 0, 0, 0 };
         int i = 0;
         if (dest->group_id) params[i++] = &dest->group_id;
@@ -307,11 +307,11 @@ void hlsparse_media_term(media_t *dest)
  */
 void hlsparse_segment_term(segment_t *dest)
 {
-    if(dest) {
-        char ** params[] = { 0 , 0 };
+    if (dest) {
+        char **params[] = { 0, 0 };
         int i = 0;
-        if(dest->title) params[i++] = &dest->title;
-        if(dest->uri) params[i++] = &dest->uri;
+        if (dest->title) params[i++] = &dest->title;
+        if (dest->uri) params[i++] = &dest->uri;
 
         hlsparse_param_term(params, i);
         hlsparse_string_list_term(&dest->custom_tags);
@@ -328,13 +328,13 @@ void hlsparse_segment_term(segment_t *dest)
  */
 void hlsparse_session_data_term(session_data_t *dest)
 {
-    if(dest) {
-        char ** params[] = { 0, 0, 0, 0 };
+    if (dest) {
+        char **params[] = { 0, 0, 0, 0 };
         int i = 0;
-        if(dest->data_id) params[i++] = &dest->data_id;
-        if(dest->uri) params[i++] = &dest->uri;
-        if(dest->language) params[i++] = &dest->language;
-        if(dest->value) params[i++] = &dest->value;
+        if (dest->data_id) params[i++] = &dest->data_id;
+        if (dest->uri) params[i++] = &dest->uri;
+        if (dest->language) params[i++] = &dest->language;
+        if (dest->value) params[i++] = &dest->value;
 
         hlsparse_param_term(params, i);
     }
@@ -350,13 +350,13 @@ void hlsparse_session_data_term(session_data_t *dest)
  */
 void hlsparse_define_term(define_t *dest)
 {
-    if(dest) {
+    if (dest) {
         dest->type = DEFINE_TYPE_INVALID;
 
-        char ** params[] = { 0, 0 };
+        char **params[] = { 0, 0 };
         int i = 0;
-        if(dest->key) params[i++] = &dest->key;
-        if(dest->value) params[i++] = &dest->value;
+        if (dest->key) params[i++] = &dest->key;
+        if (dest->value) params[i++] = &dest->value;
 
         hlsparse_param_term(params, i);
     }
@@ -374,14 +374,14 @@ void hlsparse_define_term(define_t *dest)
 void hlsparse_segment_list_term(segment_list_t *dest)
 {
 
-    if(dest) {
-        if(dest->data) {
+    if (dest) {
+        if (dest->data) {
             hlsparse_segment_term(dest->data);
             hls_free(dest->data);
             dest->data = NULL;
         }
 
-        if(dest->next) {
+        if (dest->next) {
             hlsparse_segment_list_term(dest->next);
             hls_free(dest->next);
             dest->next = NULL;
@@ -399,15 +399,15 @@ void hlsparse_segment_list_term(segment_list_t *dest)
  */
 void hlsparse_session_data_list_term(session_data_list_t *dest)
 {
-    if(dest) {
-        if(dest->data) {
+    if (dest) {
+        if (dest->data) {
             hlsparse_session_data_term(dest->data);
             hls_free(dest->data);
         }
 
         session_data_list_t *ptr = dest->next;
 
-        if(ptr) {
+        if (ptr) {
             hlsparse_session_data_list_term(ptr);
             hls_free(ptr);
         }
@@ -424,15 +424,15 @@ void hlsparse_session_data_list_term(session_data_list_t *dest)
  */
 void hlsparse_media_list_term(media_list_t *dest)
 {
-    if(dest) {
-        if(dest->data) {
+    if (dest) {
+        if (dest->data) {
             hlsparse_media_term(dest->data);
             hls_free(dest->data);
         }
 
         media_list_t *ptr = dest->next;
 
-        if(ptr) {
+        if (ptr) {
             hlsparse_media_list_term(ptr);
             hls_free(ptr);
         }
@@ -449,15 +449,15 @@ void hlsparse_media_list_term(media_list_t *dest)
  */
 void hlsparse_daterange_list_term(daterange_list_t *dest)
 {
-    if(dest) {
-        if(dest->data) {
+    if (dest) {
+        if (dest->data) {
             hlsparse_daterange_term(dest->data);
             hls_free(dest->data);
         }
 
         daterange_list_t *ptr = dest->next;
 
-        if(ptr) {
+        if (ptr) {
             hlsparse_daterange_list_term(ptr);
             hls_free(ptr);
         }
@@ -475,15 +475,15 @@ void hlsparse_daterange_list_term(daterange_list_t *dest)
 void hlsparse_iframe_stream_inf_list_term(iframe_stream_inf_list_t *dest)
 {
 
-    if(dest) {
-        if(dest->data) {
+    if (dest) {
+        if (dest->data) {
             hlsparse_iframe_stream_inf_term(dest->data);
             hls_free(dest->data);
         }
 
         iframe_stream_inf_list_t *ptr = dest->next;
 
-        if(ptr) {
+        if (ptr) {
             hlsparse_iframe_stream_inf_list_term(ptr);
             hls_free(ptr);
         }
@@ -500,15 +500,15 @@ void hlsparse_iframe_stream_inf_list_term(iframe_stream_inf_list_t *dest)
  */
 void hlsparse_stream_inf_list_term(stream_inf_list_t *dest)
 {
-    if(dest) {
-        if(dest->data) {
+    if (dest) {
+        if (dest->data) {
             hlsparse_stream_inf_term(dest->data);
             hls_free(dest->data);
         }
 
         stream_inf_list_t *ptr = dest->next;
 
-        if(ptr) {
+        if (ptr) {
             hlsparse_stream_inf_list_term(ptr);
             hls_free(ptr);
         }
@@ -525,14 +525,14 @@ void hlsparse_stream_inf_list_term(stream_inf_list_t *dest)
  */
 void hlsparse_string_list_term(string_list_t *dest)
 {
-    if(dest) {
-        if(dest->data) {
+    if (dest) {
+        if (dest->data) {
             hls_free(dest->data);
         }
 
         string_list_t *ptr = dest->next;
 
-        if(ptr) {
+        if (ptr) {
             hlsparse_string_list_term(ptr);
             hls_free(ptr);
         }
@@ -549,12 +549,12 @@ void hlsparse_string_list_term(string_list_t *dest)
  */
 void hlsparse_param_list_term(param_list_t *dest)
 {
-    if(dest) {
-        if(dest->key) {
+    if (dest) {
+        if (dest->key) {
             hls_free(dest->key);
             dest->key = NULL;
         }
-        if(dest->value.data && (dest->value_type == PARAM_TYPE_DATA || dest->value_type == PARAM_TYPE_STRING)) {
+        if (dest->value.data && (dest->value_type == PARAM_TYPE_DATA || dest->value_type == PARAM_TYPE_STRING)) {
             hls_free(dest->value.data);
         }
         dest->value.data = NULL;
@@ -564,7 +564,7 @@ void hlsparse_param_list_term(param_list_t *dest)
         param_list_t *ptr = dest->next;
         dest->next = NULL;
 
-        if(ptr) {
+        if (ptr) {
             hlsparse_param_list_term(ptr);
             hls_free(ptr);
         }
