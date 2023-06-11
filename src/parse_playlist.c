@@ -279,6 +279,53 @@ int parse_media_playlist_tag(const char *src, size_t size, media_playlist_t *des
         pt += parse_date(pt, &dest->next_segment_pdt, size - (pt - src));
     } else if(EQUAL(pt, EXTXGAP)) {
         dest->next_segment_type |= SEGMENT_TYPE_GAP;
+    } else if(EQUAL(pt, EXTXSKIP)) {
+        dest->next_segment_type |= SEGMENT_TYPE_SKIP;
+        
+        ++pt; // get past the ':'
+        segment_t *segment = hls_malloc(sizeof(segment_t));
+        hlsparse_segment_init(segment);
+
+        pt += parse_skip(pt, size - (pt - src), segment);
+        if(segment->uri && dest->uri) {
+            path_combine_realloc(&segment->uri, dest->uri, segment->uri);
+        }
+
+        segment->bitrate = dest->next_segment_bitrate;
+        segment->sequence_num = dest->next_segment_media_sequence;
+
+        // if the previous segment was a partial segment, use this to determine the pdt
+        if(dest->last_segment && (dest->last_segment->type & SEGMENT_TYPE_PART) > 0) {
+            segment->pdt = dest->last_segment->pdt_end;
+        } else {
+            segment->pdt = dest->next_segment_pdt;
+        }
+        segment->pdt_end = segment->pdt + (timestamp_t)(segment->duration * 1000.f);
+
+        // if this isn't the first segment, check to see if there is a
+        // discontinuity between this segment and the one before it
+        segment->pdt_discontinuity = HLS_FALSE;
+
+        if(dest->nb_segments > 0) {
+            if(segment->pdt != dest->last_segment->pdt_end) {
+                segment->pdt_discontinuity = HLS_TRUE;
+            }
+        }
+
+        // add this segment to the playlists duration
+        dest->duration += segment->duration;
+
+        // properties from the next full segment apply to this segment too
+        // we won't clear any of these until the full segment is available
+        segment->key_index = dest->nb_keys - 1;
+        segment->map_index = dest->nb_maps - 1;
+        if(dest->next_segment_daterange_index >= 0) {
+            segment->daterange_index = dest->next_segment_daterange_index;
+        }
+        segment->custom_tags.data = str_utils_dup(dest->custom_tags.data);
+        segment->custom_tags.next = str_utils_list_dup(dest->custom_tags.next);
+
+        add_segment_to_playlist(dest, segment);
     } else if(EQUAL(pt, EXTXALLOWCACHE)) {
         dest->allow_cache = HLS_TRUE;
     } else if(EQUAL(pt, EXTXDISCONTINUITYSEQ)) {

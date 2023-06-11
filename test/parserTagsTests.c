@@ -163,6 +163,8 @@ void segment_init_test(void)
     CU_ASSERT_EQUAL(segment.daterange_index, -1);
     CU_ASSERT_EQUAL(segment.custom_tags.data, NULL);
     CU_ASSERT_EQUAL(segment.custom_tags.next, NULL);
+    CU_ASSERT_EQUAL(segment.skipped_segments, 0);
+    CU_ASSERT_EQUAL(segment.recently_removed_dateranges, NULL);
 
     hlsparse_segment_init(NULL);
 }
@@ -933,6 +935,27 @@ void parse_define_test(void)
     CU_ASSERT_EQUAL(def.type, DEFINE_TYPE_INVALID);
 }
 
+void parse_skip_test(void)
+{
+    segment_t seg;
+    hlsparse_segment_init(&seg);
+
+    const char *src = "SKIP:SKIPPED-SEGMENTS=5,RECENTLY-REMOVED-DATERANGES=\"id0\x09id1\x09id2\"";
+    int res = parse_skip(src, strlen(src), &seg);
+    CU_ASSERT_EQUAL(res, strlen(src));
+    CU_ASSERT_EQUAL(seg.skipped_segments, 5);
+    CU_ASSERT_EQUAL(strcmp("id0\x09id1\x09id2", seg.recently_removed_dateranges), 0);
+
+    hlsparse_segment_term(&seg);
+    hlsparse_segment_init(&seg);
+
+    const char *src2 = "SKIP:SKIPPED-SEGMENTS=123,RECENTLY-REMOVED-DATERANGES=\"\"";
+    res = parse_skip(src2, strlen(src2), &seg);
+    CU_ASSERT_EQUAL(res, strlen(src2));
+    CU_ASSERT_EQUAL(seg.skipped_segments, 123);
+    CU_ASSERT_EQUAL(seg.recently_removed_dateranges, NULL);
+}
+
 void setup(void)
 {
     hlsparse_global_init();
@@ -977,5 +1000,6 @@ void setup(void)
     test("parse_session_data", parse_session_data_test);
     test("parse_start", parse_start_test);
     test("parse_define", parse_define_test);
+    test("parse_skip", parse_skip_test);
 }
 

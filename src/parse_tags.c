@@ -1009,3 +1009,31 @@ int parse_define(const char *src, size_t size, define_t* dest)
     // return how far we have moved along in the tag
     return pt - src;
 }
+
+int parse_skip(const char *src, size_t size, segment_t* dest)
+{
+    if(!src || !size) {
+        return 0;
+    }
+
+    const char* pt = src;
+
+    while(!(*pt == '\0' || *pt == '\r' || *pt == '\n' || pt >= &src[size])) {
+        if(*pt == ':') {
+            ++pt;
+        }
+
+        if(EQUAL(pt, SKIPPEDSEGMENTS)) {
+            ++pt; // get past the '='
+            pt += parse_str_to_int(pt, &dest->skipped_segments, size - (pt - src));
+        } else if(EQUAL(pt, RECENTLYREMOVEDDATERANGES)) {
+            ++pt; // get past the '='
+            pt += parse_attrib_str(pt, &dest->recently_removed_dateranges, size - (pt - src));
+        } else {
+            ++pt;
+        }
+    }
+
+    // return how far we have moved along in the tag
+    return pt - src;
+}

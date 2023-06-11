@@ -310,7 +310,6 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
         // if the previous segment was a partial segment, we don't need
         // to rewrite all the tags
         if (!prev_seg || (prev_seg->type & SEGMENT_TYPE_PART) == 0) {
-
             // write custom tags first even if the segment uri isn't available
             // because we could have custom tags indicating actions here e.g. ad post-roll injection
             string_list_t *ctags = &seg->data->custom_tags;
@@ -353,74 +352,79 @@ HLSCode hlswrite_media(char **dest, int *dest_size, media_playlist_t *playlist)
                     }
                 }
 
-                // if a bitrate is set to zero after a valid bitrate, we need to set back to zero
+                // if a bitrate is set to zero after a valid bitrate, we need to set it back to zero
                 // even though it's probably incorrect
                 if((seg->data->bitrate > 0 || bitrate > 0) && seg->data->bitrate != bitrate) {
                     ADD_TAG_INT(EXTXBITRATE, seg->data->bitrate);
                     bitrate = seg->data->bitrate;
                 }
+            }
                 
-                int dr_idx = seg->data->daterange_index;
-                if(dr_idx >= 0)
-                {
-                    daterange_list_t *dr_list = &playlist->dateranges;
-                    while(dr_idx > 0 && dr_idx < playlist->nb_dateranges) {
-                        dr_list = dr_list->next;
-                        --dr_idx;
-                    }
-                    if (dr_list && dr_list->data) {
-                        // #EXT-X-DATERANGE:ID=\"splice\",DURATION=59.94,SCTE35-IN=0xFF,CUE=\"POST,PRE\"\n
-                        daterange_t* dr = dr_list->data;
-                        START_TAG_STR(EXTXDATERANGE, ID, dr->id ? dr->id : "UNDEFINED");
-                        ADD_PARAM_STR_OPTL(CLASS, dr->klass);
-                        char buffer[30];
-                        timestamp_to_iso_date(dr->start_date, buffer, 50);
-                        ADD_PARAM_STR(STARTDATE, buffer);
-                        // TODO: do this programmatically
-                        switch(dr->cue) {
-                            case (CUE_PRE | CUE_POST | CUE_ONCE): ADD_PARAM_STR(CUE, PRE","POST","ONCE","); break;
-                            case (CUE_PRE | CUE_POST): ADD_PARAM_STR(CUE, PRE","POST); break;
-                            case (CUE_PRE | CUE_ONCE): ADD_PARAM_STR(CUE, PRE","ONCE); break;
-                            case (CUE_POST | CUE_ONCE): ADD_PARAM_STR(CUE, POST","ONCE);
-                            case CUE_PRE: ADD_PARAM_STR(CUE, PRE); break;
-                            case CUE_POST: ADD_PARAM_STR(CUE, POST); break;
-                            case CUE_ONCE: ADD_PARAM_STR(CUE, ONCE); break;
-                        }
-                        if(dr->end_date > dr->start_date) {
-                            timestamp_to_iso_date(dr->end_date, buffer, 50);
-                            ADD_PARAM_STR(ENDDATE, buffer);
-                        }
-                        if(dr->duration >= 0.f) ADD_PARAM_FLOAT(DURATION, dr->duration);
-                        if(dr->planned_duration >= 0.f) ADD_PARAM_FLOAT(PLANNEDDURATION, dr->planned_duration);
-                        param_list_t* client_attrs = &dr->client_attributes;
-                        while(client_attrs && client_attrs->key) {
-                            if(client_attrs->value_type == PARAM_TYPE_STRING) {
-                                ADD_PARAM_STR(client_attrs->key, client_attrs->value.data);
-                            }else if(client_attrs->value_type == PARAM_TYPE_FLOAT) {
-                                ADD_PARAM_FLOAT(client_attrs->key, client_attrs->value.number);
-                            }else if(client_attrs->value_type == PARAM_TYPE_DATA) {
-                                ADD_PARAM_HEX(client_attrs->key, client_attrs->value.data, client_attrs->value_size);
-                            }
-                            client_attrs = client_attrs->next;
-                        }
-                        ADD_PARAM_HEX_OPTL(SCTE35CMD, dr->scte35_cmd, dr->scte35_cmd_size);
-                        ADD_PARAM_HEX_OPTL(SCTE35OUT, dr->scte35_out, dr->scte35_out_size);
-                        ADD_PARAM_HEX_OPTL(SCTE35IN, dr->scte35_in, dr->scte35_in_size);
-                        ADD_PARAM_BOOL_YES_ONLY(ENDONNEXT, dr->end_on_next);
-                        END_TAG();
-                    }
+            int dr_idx = seg->data->daterange_index;
+            if(dr_idx >= 0)
+            {
+                daterange_list_t *dr_list = &playlist->dateranges;
+                while(dr_idx > 0 && dr_idx < playlist->nb_dateranges) {
+                    dr_list = dr_list->next;
+                    --dr_idx;
                 }
+                if (dr_list && dr_list->data) {
+                    // #EXT-X-DATERANGE:ID=\"splice\",DURATION=59.94,SCTE35-IN=0xFF,CUE=\"POST,PRE\"\n
+                    daterange_t* dr = dr_list->data;
+                    START_TAG_STR(EXTXDATERANGE, ID, dr->id ? dr->id : "UNDEFINED");
+                    ADD_PARAM_STR_OPTL(CLASS, dr->klass);
+                    char buffer[30];
+                    timestamp_to_iso_date(dr->start_date, buffer, 50);
+                    ADD_PARAM_STR(STARTDATE, buffer);
+                    // TODO: do this programmatically
+                    switch(dr->cue) {
+                        case (CUE_PRE | CUE_POST | CUE_ONCE): ADD_PARAM_STR(CUE, PRE","POST","ONCE","); break;
+                        case (CUE_PRE | CUE_POST): ADD_PARAM_STR(CUE, PRE","POST); break;
+                        case (CUE_PRE | CUE_ONCE): ADD_PARAM_STR(CUE, PRE","ONCE); break;
+                        case (CUE_POST | CUE_ONCE): ADD_PARAM_STR(CUE, POST","ONCE);
+                        case CUE_PRE: ADD_PARAM_STR(CUE, PRE); break;
+                        case CUE_POST: ADD_PARAM_STR(CUE, POST); break;
+                        case CUE_ONCE: ADD_PARAM_STR(CUE, ONCE); break;
+                    }
+                    if(dr->end_date > dr->start_date) {
+                        timestamp_to_iso_date(dr->end_date, buffer, 50);
+                        ADD_PARAM_STR(ENDDATE, buffer);
+                    }
+                    if(dr->duration >= 0.f) ADD_PARAM_FLOAT(DURATION, dr->duration);
+                    if(dr->planned_duration >= 0.f) ADD_PARAM_FLOAT(PLANNEDDURATION, dr->planned_duration);
+                    param_list_t* client_attrs = &dr->client_attributes;
+                    while(client_attrs && client_attrs->key) {
+                        if(client_attrs->value_type == PARAM_TYPE_STRING) {
+                            ADD_PARAM_STR(client_attrs->key, client_attrs->value.data);
+                        }else if(client_attrs->value_type == PARAM_TYPE_FLOAT) {
+                            ADD_PARAM_FLOAT(client_attrs->key, client_attrs->value.number);
+                        }else if(client_attrs->value_type == PARAM_TYPE_DATA) {
+                            ADD_PARAM_HEX(client_attrs->key, client_attrs->value.data, client_attrs->value_size);
+                        }
+                        client_attrs = client_attrs->next;
+                    }
+                    ADD_PARAM_HEX_OPTL(SCTE35CMD, dr->scte35_cmd, dr->scte35_cmd_size);
+                    ADD_PARAM_HEX_OPTL(SCTE35OUT, dr->scte35_out, dr->scte35_out_size);
+                    ADD_PARAM_HEX_OPTL(SCTE35IN, dr->scte35_in, dr->scte35_in_size);
+                    ADD_PARAM_BOOL_YES_ONLY(ENDONNEXT, dr->end_on_next);
+                    END_TAG();
+                }
+            }
 
-                if(seg->data->discontinuity == HLS_TRUE) {
-                    ADD_TAG(EXTXDISCONTINUITY);
-                    char buf[30];
-                    timestamp_to_iso_date(seg->data->pdt, buf, 30);
-                    ADD_TAG_ENUM(EXTXPROGRAMDATETIME, buf);
-                }
+            if(seg->data->discontinuity == HLS_TRUE) {
+                ADD_TAG(EXTXDISCONTINUITY);
+                char buf[30];
+                timestamp_to_iso_date(seg->data->pdt, buf, 30);
+                ADD_TAG_ENUM(EXTXPROGRAMDATETIME, buf);
             }
         }
 
-        if(seg->data->uri) {
+        // skip segment
+        if ((seg->data->type & SEGMENT_TYPE_SKIP) > 0) {
+            START_TAG_INT(EXTXSKIP, SKIPPEDSEGMENTS, seg->data->skipped_segments);
+            ADD_PARAM_STR_OPTL(RECENTLYREMOVEDDATERANGES, seg->data->recently_removed_dateranges);
+            END_TAG();
+        } else if(seg->data->uri) {
             if((seg->data->type & SEGMENT_TYPE_FULL) > 0) {
                 if((seg->data->type & SEGMENT_TYPE_GAP) > 0) {
                     ADD_TAG(EXTXGAP);

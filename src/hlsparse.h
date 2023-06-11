@@ -59,6 +59,7 @@
 
 #define SEGMENT_TYPE_FULL           0x01
 #define SEGMENT_TYPE_PART           0x02
+#define SEGMENT_TYPE_SKIP           0x04
 #define SEGMENT_TYPE_GAP            0x80 // aka FULL_GAP
 #define SEGMENT_TYPE_FULL_GAP       0x81 // FULL | GAP
 #define SEGMENT_TYPE_PART_GAP       0x82 // PART | GAP 
@@ -97,9 +98,9 @@
 #define EXTXGAP                     "EXT-X-GAP"
 #define EXTXBITRATE                 "EXT-X-BITRATE"
 #define EXTXPART                    "EXT-X-PART"
+#define EXTXSKIP                    "EXT-X-SKIP"
 // TODO
 #define EXTXSERVERCONTROL           "EXT-X-SERVER-CONTROL"
-#define EXTXSKIP                    "EXT-X-SKIP"
 #define EXTXPRELOADHINT             "EXT-X-PRELOAD-HINT"
 #define EXTXRENDITIONREPORT         "EXT-X-RENDITION-REPORT"
 #define EXTXCONTENTSTEERING         "EXT-X-CONTENT-STEERING"
@@ -170,6 +171,8 @@
 #define PARTTARGET                  "PART-TARGET"
 #define INDEPENDENT                 "INDEPENDENT"
 #define GAP                         "GAP"
+#define SKIPPEDSEGMENTS             "SKIPPED-SEGMENTS"
+#define RECENTLYREMOVEDDATERANGES   "RECENTLY-REMOVED-DATERANGES"
 
 #ifdef __cplusplus
 extern "C" {
@@ -306,9 +309,11 @@ typedef struct {
     int map_index;
     int daterange_index;
     int bitrate; // kbps
+    int skipped_segments; // when type == SEGMENT_TYPE_SKIP
     float duration;
     char *title;
     char *uri;
+    char *recently_removed_dateranges; // when type == SEGMENT_TYPE_SKIP
     bool_t discontinuity;
     bool_t pdt_discontinuity;
     bool_t independent;

@@ -537,8 +537,8 @@ void write_media_test3(void)
     media.iframes_only = HLS_FALSE;
     media.end_list = HLS_TRUE;
 
-    media.nb_segments = 5;
-    segment_t segs[5];
+    media.nb_segments = 6;
+    segment_t segs[6];
     hls_key_t keys[3];
     segment_list_t seg_lists[5];
     key_list_t key_lists[2];
@@ -626,13 +626,19 @@ void write_media_test3(void)
             seg->type = SEGMENT_TYPE_FULL | SEGMENT_TYPE_GAP;
             seg->bitrate = 1200;
         }else if(i == 3){
+            seg->type = SEGMENT_TYPE_SKIP;
+            seg->skipped_segments = 3;
+            seg->recently_removed_dateranges = NULL;
+        }
+        else if(i == 4){
             pdt += 4605LL;
             seg->duration = 4.605f;
             seg->key_index = 1;
             seg->type = SEGMENT_TYPE_FULL;
             seg->bitrate = 1600;
             seg->daterange_index = 0;
-        }else if(i == 4){
+        }
+        else if(i == 5){
             seg->key_index = 2;
             seg->custom_tags = tags[3];
             seg->type = SEGMENT_TYPE_FULL;
@@ -640,8 +646,8 @@ void write_media_test3(void)
         }
 
         // note that the last segment URL is not specified, as we only want the custom tags
-        // to get written
-        if(i < 4) {
+        // to get written, and the 3rd segment is a skip segment so it doesn't have a uri
+        if(i < 3 || i == 4) {
             char uri[50];
             snprintf(uri, 50, "ADAP/00060/1001_ADAP_0000%d.ts", i+1);
             seg->uri = strdup(uri);
@@ -681,10 +687,11 @@ ADAP/00060/1001_ADAP_00002.ts\n\
 #EXT-X-GAP\n\
 #EXTINF:5.005,\n\
 ADAP/00060/1001_ADAP_00003.ts\n\
+#EXT-X-SKIP:SKIPPED-SEGMENTS=3\n\
 #EXT-X-BITRATE:1600\n\
 #EXT-X-DATERANGE:ID=\"splice\",CLASS=\"my.class\",START-DATE=\"2023-05-29T01:05:49.605Z\",CUE=\"PRE,POST\",END-DATE=\"2023-05-29T01:11:11.376Z\",DURATION=59.940,X-MY-KEY=\"my_value\",SCTE35-OUT=0x0304,SCTE35-IN=0x0102,END-ON-NEXT=YES\n\
 #EXTINF:4.605,\n\
-ADAP/00060/1001_ADAP_00004.ts\n\
+ADAP/00060/1001_ADAP_00005.ts\n\
 #EXT-X-CUE-OUT:_fw_params=\"abc=a&efg=POSTROLL&pop=4\"\n\
 #EXT-X-CUE-IN\n\
 #EXT-X-ENDLIST\n";
