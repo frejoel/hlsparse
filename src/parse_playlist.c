@@ -78,6 +78,7 @@ int parse_multivariant_playlist_tag(const char *src, size_t size, multivariant_p
         char* path = NULL;
         pt += parse_line_to_str(pt, &path, size - (pt - src));
         path_combine(&stream_inf->uri, dest->uri, path);
+        if (path) hls_free(path);
 
         stream_inf_list_t *next = &dest->stream_infs;
 

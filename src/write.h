@@ -17,6 +17,8 @@ typedef struct page {
 } page_t;
 
 page_t* create_page(page_t *page);
+void free_page_root(page_t *root);
+
 page_t* write_to_page(page_t *page, const char *buffer, int size);
 page_t* pgprintf(page_t *page, const char *format, ...);
 void page_to_str(page_t *page, char **dest, int *dest_size);
